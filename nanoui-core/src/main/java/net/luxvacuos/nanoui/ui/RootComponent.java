@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,32 +21,42 @@
 package net.luxvacuos.nanoui.ui;
 
 import static org.lwjgl.nanovg.NanoVG.nvgBeginPath;
-import static org.lwjgl.nanovg.NanoVG.*;
+import static org.lwjgl.nanovg.NanoVG.nvgIntersectScissor;
+import static org.lwjgl.nanovg.NanoVG.nvgRect;
 import static org.lwjgl.nanovg.NanoVG.nvgRestore;
 import static org.lwjgl.nanovg.NanoVG.nvgSave;
 import static org.lwjgl.nanovg.NanoVG.nvgStroke;
 import static org.lwjgl.nanovg.NanoVG.nvgStrokeColor;
 import static org.lwjgl.nanovg.NanoVG.nvgStrokeWidth;
+import static org.lwjgl.nanovg.NanoVG.nvgTranslate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class RootComponent {
 
 	private List<Component> components = new ArrayList<>();
 
-	public Root root;
+	protected Root root;
 	protected ILayout layout;
+	private Window window;
 
 	public RootComponent(float x, float y, float w, float h) {
 		layout = new EmptyLayout();
 		root = new Root(x, y - h, w, h);
 	}
 
-	public void render(Window window) {
+	public void init(Window window) {
+		this.window = window;
+		for (Component component : components) {
+			component.init(window);
+		}
+	}
+
+	public void render() {
 		long vg = window.getNVGID();
 		nvgSave(vg);
 		nvgIntersectScissor(vg, root.rootX, window.getHeight() - root.rootY - root.rootH, root.rootW, root.rootH);
@@ -57,21 +67,53 @@ public class RootComponent {
 			nvgStrokeColor(vg, Theme.debugE);
 			nvgStroke(vg);
 		}
-		nvgSave(vg);
 		for (Component component : components) {
 			component.render(window);
 		}
 		nvgRestore(vg);
+	}
+
+	public void render(float x, float y, float w, float h) {
+		long vg = window.getNVGID();
+		nvgSave(vg);
+		nvgTranslate(vg, -x, -y);
+		nvgIntersectScissor(vg, root.rootX, window.getHeight() - root.rootY - root.rootH, root.rootW, root.rootH);
+		if (Theme.DEBUG) {
+			nvgBeginPath(vg);
+			nvgRect(vg, root.rootX, window.getHeight() - root.rootY - root.rootH, root.rootW, root.rootH);
+			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
+			nvgStrokeColor(vg, Theme.debugE);
+			nvgStroke(vg);
+		}
+		for (Component component : components) {
+			component.render(window);
+		}
 		nvgRestore(vg);
 	}
 
-	public void update(float delta, Window window) {
+	public void renderManual() {
+		long vg = window.getNVGID();
+		nvgSave(vg);
+		if (Theme.DEBUG) {
+			nvgBeginPath(vg);
+			nvgRect(vg, root.rootX, window.getHeight() - root.rootY - root.rootH, root.rootW, root.rootH);
+			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
+			nvgStrokeColor(vg, Theme.debugE);
+			nvgStroke(vg);
+		}
+		for (Component component : components) {
+			component.render(window);
+		}
+		nvgRestore(vg);
+	}
+
+	public void update(float delta) {
 		for (Component component : components) {
 			component.update(delta, window);
 		}
 	}
 
-	public void alwaysUpdate(float delta, Window window, float x, float y, float w, float h) {
+	public void alwaysUpdate(float delta, float x, float y, float w, float h) {
 		root.rootX = x;
 		root.rootY = y - h;
 		root.rootW = w;
@@ -83,7 +125,7 @@ public class RootComponent {
 		}
 	}
 
-	public void dispose(Window window) {
+	public void dispose() {
 		for (Component component : components) {
 			component.dispose(window);
 		}
@@ -92,19 +134,21 @@ public class RootComponent {
 
 	public void addComponent(Component component) {
 		component.rootComponent = root;
-		component.init();
+		if (window != null)
+			component.init(window);
 		components.add(component);
 	}
 
 	public void addAllComponents(List<Component> components) {
 		for (Component component : components) {
 			component.rootComponent = root;
-			component.init();
+			if (window != null)
+				component.init(window);
 			this.components.add(component);
 		}
 	}
 
-	public void removeComponent(Component component, Window window) {
+	public void removeComponent(Component component) {
 		component.dispose(window);
 		components.remove(component);
 	}
@@ -123,17 +167,6 @@ public class RootComponent {
 
 	public float getFinalH() {
 		return layout.getFinalH();
-	}
-	
-	public float getWidth() {
-		return root.rootW;
-	}
-	public float getHeight() {
-		return root.rootH;
-	}
-	
-	public List<Component> getComponents() {
-		return components;
 	}
 
 }

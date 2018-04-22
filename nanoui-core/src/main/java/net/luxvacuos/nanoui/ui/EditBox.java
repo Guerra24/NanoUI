@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,18 @@
 
 package net.luxvacuos.nanoui.ui;
 
+import org.lwjgl.glfw.GLFW;
+
+import net.luxvacuos.nanoui.input.KeyboardHandler;
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class EditBox extends Component {
 	private String text, font = "Poppins-Medium";
 	private float fontSize = 20f;
 	private boolean selected = false;
-	private OnAction onAction;
+	private OnAction onAction, onEnterFress;
 
 	public EditBox(float x, float y, float width, float height, String text) {
 		this.x = x;
@@ -40,17 +43,21 @@ public class EditBox extends Component {
 
 	@Override
 	public void render(Window window) {
-		Theme.renderEditBox(window.getNVGID(), text, font, rootComponent.rootX + alignedX,
+		Theme.renderEditBox(window.getNVGID(), componentState, text, font, rootComponent.rootX + alignedX,
 				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, fontSize, selected);
 	}
 
 	@Override
 	public void update(float delta, Window window) {
+		super.update(delta, window);
+		KeyboardHandler kb = window.getKeyboardHandler();
 		MouseHandler mh = window.getMouseHandler();
+		if (insideBox(mh))
+			componentState = ComponentState.HOVER;
 		if (mh.isButtonPressed(0)) {
 			if (insideBox(mh)) {
-				window.getKeyboardHandler().enableTextInput();
-				window.getKeyboardHandler().clearInputData();
+				kb.enableTextInput();
+				kb.clearInputData();
 				selected = true;
 			} else {
 				if (selected && onAction != null)
@@ -58,15 +65,26 @@ public class EditBox extends Component {
 				selected = false;
 			}
 		}
-		if (selected)
-			text = window.getKeyboardHandler().handleInput(text);
-		super.update(delta, window);
+		if (selected) {
+			text = kb.handleInput(text);
+			componentState = ComponentState.SELECTED;
+			if (kb.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && kb.isKeyPressed(GLFW.GLFW_KEY_V)) {
+				kb.ignoreKeyUntilRelease(GLFW.GLFW_KEY_LEFT_CONTROL);
+				kb.ignoreKeyUntilRelease(GLFW.GLFW_KEY_V);
+				text += GLFW.glfwGetClipboardString(window.getID());
+			}
+		}
+		if (kb.isKeyPressed(GLFW.GLFW_KEY_ENTER)) {
+			kb.ignoreKeyUntilRelease(GLFW.GLFW_KEY_ENTER);
+			if (onEnterFress != null)
+				onEnterFress.onAction();
+			text = "";
+		}
 	}
 
 	public boolean insideBox(MouseHandler mh) {
 		return mh.getX() > rootComponent.rootX + alignedX && mh.getY() > rootComponent.rootY + alignedY
-				&& mh.getX() < rootComponent.rootX + alignedX + w
-				&& mh.getY() < rootComponent.rootY + alignedY + h;
+				&& mh.getX() < rootComponent.rootX + alignedX + w && mh.getY() < rootComponent.rootY + alignedY + h;
 	}
 
 	public void setFontSize(float fontSize) {
@@ -87,5 +105,9 @@ public class EditBox extends Component {
 
 	public void setOnUnselect(OnAction onAction) {
 		this.onAction = onAction;
+	}
+
+	public void setOnEnterFress(OnAction onEnterFress) {
+		this.onEnterFress = onEnterFress;
 	}
 }

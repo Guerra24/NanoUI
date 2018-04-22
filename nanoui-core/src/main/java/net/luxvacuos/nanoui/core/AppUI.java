@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +23,12 @@ package net.luxvacuos.nanoui.core;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.PixelBufferHandle;
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.glfw.WindowHandle;
-import net.luxvacuos.nanoui.rendering.api.glfw.WindowManager;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.NanoTheme;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.PixelBufferHandle;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.glfw.WindowHandle;
+import net.luxvacuos.nanoui.rendering.glfw.WindowManager;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.NanoTheme;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.ThemeManager;
 import net.luxvacuos.nanoui.resources.ResourceLoader;
 import net.luxvacuos.nanoui.ui.Font;
 
@@ -36,7 +36,7 @@ public class AppUI {
 
 	private static Window window;
 
-	private Font poppinsRegular, poppinsLight, poppinsMedium, poppinsBold, poppinsSemiBold, entypo, segoeui, segoemdl2;
+	private Font poppinsRegular, poppinsLight, poppinsMedium, poppinsBold, poppinsSemiBold;
 
 	public void init() {
 		WindowHandle handle = WindowManager.generateHandle(Variables.WIDTH, Variables.HEIGHT, Variables.TITLE);
@@ -49,7 +49,8 @@ public class AppUI {
 		handle.setPixelBuffer(pb);
 		window = WindowManager.generate(handle);
 		WindowManager.createWindow(handle, window, true);
-		Theme.setTheme(new NanoTheme());
+		ThemeManager.addTheme(new NanoTheme());
+		ThemeManager.setTheme("Nano");
 
 		ResourceLoader loader = window.getResourceLoader();
 		poppinsRegular = loader.loadNVGFont("Poppins-Regular", "Poppins-Regular");
@@ -57,9 +58,6 @@ public class AppUI {
 		poppinsMedium = loader.loadNVGFont("Poppins-Medium", "Poppins-Medium");
 		poppinsBold = loader.loadNVGFont("Poppins-Bold", "Poppins-Bold");
 		poppinsSemiBold = loader.loadNVGFont("Poppins-SemiBold", "Poppins-SemiBold");
-		entypo = loader.loadNVGFont("fontawesome-webfont", "Entypo", 40, false);
-		segoeui = loader.loadNVGFont("C:\\Windows\\Fonts\\segoeui", "Segoe UI", true);
-		segoemdl2 = loader.loadNVGFont("C:\\Windows\\Fonts\\segmdl2", "Segoe MDL2", true);
 	}
 
 	public void update(float delta) {
@@ -72,9 +70,6 @@ public class AppUI {
 		poppinsMedium.dispose();
 		poppinsBold.dispose();
 		poppinsSemiBold.dispose();
-		entypo.dispose();
-		segoeui.dispose();
-		segoemdl2.dispose();
 		WindowManager.closeAllDisplays();
 		GLFW.glfwTerminate();
 	}

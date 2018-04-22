@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,17 @@
 
 package net.luxvacuos.nanoui.ui;
 
-import static org.lwjgl.nanovg.NanoVG.*;
+import static org.lwjgl.nanovg.NanoVG.nvgBeginPath;
+import static org.lwjgl.nanovg.NanoVG.nvgIntersectScissor;
+import static org.lwjgl.nanovg.NanoVG.nvgRect;
+import static org.lwjgl.nanovg.NanoVG.nvgRestore;
+import static org.lwjgl.nanovg.NanoVG.nvgSave;
+import static org.lwjgl.nanovg.NanoVG.nvgStroke;
+import static org.lwjgl.nanovg.NanoVG.nvgStrokeColor;
+import static org.lwjgl.nanovg.NanoVG.nvgStrokeWidth;
 
-import java.util.List;
-
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Container extends Component {
 
@@ -40,18 +45,22 @@ public class Container extends Component {
 	}
 
 	@Override
+	public void init(Window window) {
+		comp.init(window);
+	}
+
+	@Override
 	public void render(Window window) {
 		long vg = window.getNVGID();
 		nvgSave(window.getNVGID());
-		nvgIntersectScissor(vg, rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h);
-		comp.render(window);
+		nvgIntersectScissor(vg, rootComponent.rootX + alignedX, window.getHeight() - rootComponent.rootY - alignedY - h,
+				w, h);
+		comp.render();
 		if (Theme.DEBUG) {
 			nvgBeginPath(vg);
-			nvgRect(vg, rootComponent.rootX + alignedX,
-					window.getHeight() - rootComponent.rootY - alignedY - h, w, h);
+			nvgRect(vg, rootComponent.rootX + alignedX, window.getHeight() - rootComponent.rootY - alignedY - h, w, h);
 			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
-			nvgStrokeColor(vg, Theme.debugB);
+			nvgStrokeColor(vg, Theme.debugC);
 			nvgStroke(vg);
 		}
 		nvgRestore(vg);
@@ -59,19 +68,19 @@ public class Container extends Component {
 
 	@Override
 	public void update(float delta, Window window) {
-		comp.update(delta, window);
+		comp.update(delta);
 		super.update(delta, window);
 	}
 
 	@Override
 	public void alwaysUpdate(float delta, Window window) {
 		super.alwaysUpdate(delta, window);
-		comp.alwaysUpdate(delta, window, rootComponent.rootX + alignedX, rootComponent.rootY + alignedY + h, w, h);
+		comp.alwaysUpdate(delta, rootComponent.rootX + alignedX, rootComponent.rootY + alignedY + h, w, h);
 	}
 
 	@Override
 	public void dispose(Window window) {
-		comp.dispose(window);
+		comp.dispose();
 		super.dispose(window);
 	}
 
@@ -83,12 +92,8 @@ public class Container extends Component {
 		comp.addComponent(component);
 	}
 
-	public void removeComponent(Component component, Window window) {
-		comp.removeComponent(component, window);
-	}
-
-	public List<Component> getComponents() {
-		return comp.getComponents();
+	public void removeComponent(Component component) {
+		comp.removeComponent(component);
 	}
 
 }

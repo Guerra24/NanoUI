@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@ package net.luxvacuos.nanoui.ui;
 
 import static org.lwjgl.nanovg.NanoVG.nvgDeleteImage;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.core.TaskManager;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Image extends Component {
 
 	private int image;
-	private boolean deleteOnClose;
+	private boolean deleteOnClose = true;
 
 	public Image(float x, float y, float w, float h, int image) {
 		this.x = x;
@@ -49,18 +50,17 @@ public class Image extends Component {
 
 	@Override
 	public void render(Window window) {
-		if (image != -1)
-			Theme.renderImage(window.getNVGID(), rootComponent.rootX + alignedX,
-					window.getHeight() - rootComponent.rootY - alignedY - h, w, h, image, 1);
+		Theme.renderImage(window.getNVGID(), rootComponent.rootX + alignedX,
+				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, image, 1);
 	}
 
 	@Override
 	public void dispose(Window window) {
 		super.dispose(window);
-		if (deleteOnClose && image != -1)
-			nvgDeleteImage(window.getNVGID(), image);
+		if (deleteOnClose)
+			TaskManager.addTask(() -> nvgDeleteImage(window.getNVGID(), image));
 	}
-	
+
 	public void setImage(int image) {
 		this.image = image;
 	}

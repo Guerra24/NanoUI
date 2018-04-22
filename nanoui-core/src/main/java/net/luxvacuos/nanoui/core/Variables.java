@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ public class Variables {
 	public static boolean DEBUG = false;
 	public static boolean DECORATED = true;
 	public static boolean ALWAYS_ON_TOP = false;
-	public static float SCROLLBAR_SIZE = 16;
-	public static float TITLEBAR_HEIGHT = 32;
+	public static int SCROLLBAR_SIZE = 16;
 
 }

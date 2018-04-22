@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,23 @@
 
 package net.luxvacuos.nanoui.ui;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
 
 public abstract class Component implements IComponent {
 
 	protected Root rootComponent;
 	protected Alignment alignment = Alignment.RIGHT_TOP, windowAlignment = Alignment.LEFT_BOTTOM;
 	protected float alignedX, alignedY, x, y, w, h;
-	protected boolean resizeH = false, resizeV = false;;
+	protected boolean resizeH = false, resizeV = false;
+	protected ComponentState componentState = ComponentState.NONE;
 
 	@Override
-	public void init() {
+	public void init(Window window) {
 	}
 
 	@Override
 	public void update(float delta, Window window) {
+		componentState = ComponentState.NONE;
 	}
 
 	@Override
@@ -122,7 +124,7 @@ public abstract class Component implements IComponent {
 		if (resizeH)
 			w = rootComponent.rootW - x;
 		if (resizeV)
-			h = rootComponent.rootH;
+			h = rootComponent.rootH - y;
 
 	}
 
@@ -144,30 +146,6 @@ public abstract class Component implements IComponent {
 
 	public void setResizeV(boolean resizeV) {
 		this.resizeV = resizeV;
-	}
-
-	public float getAlignedX() {
-		return alignedX;
-	}
-
-	public float getX() {
-		return x;
-	}
-
-	public float getAlignedY() {
-		return alignedY;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public float getW() {
-		return w;
-	}
-
-	public float getH() {
-		return h;
 	}
 
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,17 @@
 package net.luxvacuos.nanoui.ui;
 
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT;
-import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_BOTTOM;
+import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE;
 
 import org.lwjgl.nanovg.NVGColor;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Text extends Component {
-	protected String text, font = "Segoe UI";
-	protected int align = NVG_ALIGN_LEFT | NVG_ALIGN_BOTTOM;
-	protected float fontSize = 17;
+	protected String text, font = "Poppins-Regular";
+	protected int align = NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE;
+	protected float fontSize = 24;
 	protected NVGColor color = Theme.rgba(255, 255, 255, 255, NVGColor.create());
 
 	public Text(String text, float x, float y) {
@@ -44,7 +44,6 @@ public class Text extends Component {
 	public void render(Window window) {
 		w = Theme.renderText(window.getNVGID(), text, font, align, rootComponent.rootX + alignedX,
 				window.getHeight() - rootComponent.rootY - alignedY, fontSize, color) - rootComponent.rootX - alignedX;
-		h = fontSize;
 	}
 
 	public void setAlign(int align) {

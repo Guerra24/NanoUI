@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ import static org.lwjgl.nanovg.NanoVG.nvgSave;
 
 import net.luxvacuos.nanoui.core.Variables;
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 import net.luxvacuos.nanoui.util.Maths;
 
 public class ScrollArea extends Component {
@@ -50,6 +50,12 @@ public class ScrollArea extends Component {
 	}
 
 	@Override
+	public void init(Window window) {
+		comp.init(window);
+		super.init(window);
+	}
+
+	@Override
 	public void render(Window window) {
 		Theme.renderBox(window.getNVGID(), rootComponent.rootX + alignedX,
 				window.getHeight() - rootComponent.rootY - alignedY - h, w, h,
@@ -57,19 +63,19 @@ public class ScrollArea extends Component {
 		nvgSave(window.getNVGID());
 		nvgIntersectScissor(window.getNVGID(), rootComponent.rootX + alignedX,
 				window.getHeight() - rootComponent.rootY - alignedY - h, w, h);
-		comp.render(window);
+		comp.renderManual();
 		nvgRestore(window.getNVGID());
-		Theme.renderScrollBarV(window.getNVGID(), rootComponent.rootX + alignedX,
+		Theme.renderScrollBarV(window.getNVGID(), componentState, rootComponent.rootX + alignedX,
 				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, scrollH / maxH,
 				Maths.clamp(h - maxH, 20));
 	}
 
 	@Override
 	public void update(float delta, Window window) {
-		comp.update(delta, window);
 		super.update(delta, window);
-		float scrollBarSize = Variables.SCROLLBAR_SIZE;
+		comp.update(delta);
 		MouseHandler mh = window.getMouseHandler();
+		int scrollBarSize = Variables.SCROLLBAR_SIZE;
 		if (mh.isButtonPressed(0)) {
 			if (mh.getX() > rootComponent.rootX + alignedX + w - scrollBarSize
 					&& mh.getX() < rootComponent.rootX + alignedX + w
@@ -78,8 +84,7 @@ public class ScrollArea extends Component {
 				scrollH -= 200 * delta;
 			}
 			if (mh.getX() > rootComponent.rootX + alignedX + w - scrollBarSize
-					&& mh.getX() < rootComponent.rootX + alignedX + w
-					&& mh.getY() > rootComponent.rootY + alignedY
+					&& mh.getX() < rootComponent.rootX + alignedX + w && mh.getY() > rootComponent.rootY + alignedY
 					&& mh.getY() < rootComponent.rootY + alignedY + scrollBarSize) {
 				scrollH += 200 * delta;
 			}
@@ -94,15 +99,14 @@ public class ScrollArea extends Component {
 
 	@Override
 	public void alwaysUpdate(float delta, Window window) {
-		comp.alwaysUpdate(delta, window, rootComponent.rootX + alignedX, rootComponent.rootY - alignedY + h + scrollH,
-				w, h);
-		maxH = Maths.clamp(-h + -comp.getFinalH(), 0);
 		super.alwaysUpdate(delta, window);
+		comp.alwaysUpdate(delta, rootComponent.rootX + alignedX, rootComponent.rootY - alignedY + h + scrollH, w, h);
+		maxH = Maths.clamp(-h + -comp.getFinalH(), 0);
 	}
 
 	@Override
 	public void dispose(Window window) {
-		comp.dispose(window);
+		comp.dispose();
 		super.dispose(window);
 	}
 
@@ -111,13 +115,13 @@ public class ScrollArea extends Component {
 	}
 
 	private boolean scrollBarV(float scrollBarSize, MouseHandler mh) {
-		float scrollv = Maths.clamp(h - maxH, 20);
+		float scrollv = (h / (maxH + h / 2f)) * (h / 2);
 		return mh.getX() > rootComponent.rootX + alignedX + w - scrollBarSize
 				&& mh.getX() < rootComponent.rootX + alignedX + w - scrollBarSize + scrollBarSize
-				&& mh.getY() > rootComponent.rootY + alignedY + y + scrollBarSize
-						+ (1 - scrollH / maxH) * (h - scrollBarSize * 2f - scrollv)
-				&& mh.getY() < rootComponent.rootY + alignedY + y + scrollBarSize
-						+ (1 - scrollH / maxH) * (h - scrollBarSize * 2f - scrollv) + scrollv;
+				&& mh.getY() > rootComponent.rootY + alignedY + scrollBarSize
+						+ (h - 8 - scrollv) * (1 - (scrollH / maxH))
+				&& mh.getY() < rootComponent.rootY + alignedY + scrollBarSize
+						+ (h - 8 - scrollv) * (1 - (scrollH / maxH)) + scrollv - scrollBarSize * 2f + 8;
 	}
 
 	public void addComponent(Component component) {

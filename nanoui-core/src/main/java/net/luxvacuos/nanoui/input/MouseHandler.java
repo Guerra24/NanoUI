@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import net.luxvacuos.nanoui.input.callbacks.MouseButtonCallback;
 import net.luxvacuos.nanoui.input.callbacks.MouseEnterCallback;
 import net.luxvacuos.nanoui.input.callbacks.MousePosCallback;
 import net.luxvacuos.nanoui.input.callbacks.MouseScrollCallback;
-import net.luxvacuos.nanoui.rendering.api.glfw.AbstractWindow;
+import net.luxvacuos.nanoui.rendering.glfw.AbstractWindow;
 
 public class MouseHandler {
 

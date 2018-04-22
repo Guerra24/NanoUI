@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
 
 import org.lwjgl.nanovg.NVGColor;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class TextArea extends Component {
 
-	private String text, font = "Segoe UI";
+	private String text, font = "Poppins-Medium";
 	private int align = NVG_ALIGN_LEFT | NVG_ALIGN_TOP;
-	private float fontSize = 20;
+	private float fontSize = 22;
 	private NVGColor color = Theme.rgba(255, 255, 255, 255, NVGColor.create());
 
 	public TextArea(String text, float x, float y, float w) {
@@ -45,8 +45,7 @@ public class TextArea extends Component {
 	@Override
 	public void render(Window window) {
 		h = Theme.renderParagraph(window.getNVGID(), rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY, w, fontSize, font, text,
-				align, color);
+				window.getHeight() - rootComponent.rootY - alignedY, w, fontSize, font, text, align, color);
 	}
 
 	public void setAlign(int align) {
@@ -60,7 +59,7 @@ public class TextArea extends Component {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	public String getText() {
 		return text;
 	}
@@ -75,7 +74,7 @@ public class TextArea extends Component {
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
 	}
-	
+
 	@Override
 	public void setAlignment(Alignment alignment) {
 		throw new UnsupportedOperationException("Please use setAlign method for text alignment");

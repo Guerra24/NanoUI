@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ public final class StateMachine {
 	}
 
 	public static boolean isRunning() {
-		return internalState == InternalState.RUNNING;
+		return internalState == InternalState.RUNNING || internalState == InternalState.LOADING;
 	}
 
 	public static boolean registerState(IState state) {
@@ -57,10 +57,15 @@ public final class StateMachine {
 			return false;
 	}
 
+	public static boolean hasState(String state) {
+		return registeredStates.containsKey(state);
+	}
+
 	public static boolean update(float deltaTime) {
 		if (currentState == null)
 			return false;
-
+		if (internalState == InternalState.LOADING)
+			return false;
 		currentState.update(deltaTime);
 		return true;
 	}
@@ -68,11 +73,14 @@ public final class StateMachine {
 	public static boolean render(float alpha) {
 		if (currentState == null)
 			return false;
+		if (internalState == InternalState.LOADING)
+			return false;
 		currentState.render(alpha);
 		return true;
 	}
 
 	public static boolean setCurrentState(String name) {
+		internalState = InternalState.LOADING;
 		if (name != null || registeredStates.containsKey(name)) {
 			IState state = registeredStates.get(name);
 			if (currentState != null) {
@@ -85,9 +93,12 @@ public final class StateMachine {
 
 			currentState = state;
 			currentState.start();
+			internalState = InternalState.RUNNING;
 			return true;
-		} else
+		} else {
+			internalState = InternalState.RUNNING;
 			return false;
+		}
 	}
 
 	public static IState getCurrentState() {
@@ -114,7 +125,7 @@ public final class StateMachine {
 	}
 
 	public enum InternalState {
-		STOPPED, RUNNING
+		STOPPED, RUNNING, LOADING
 	}
 
 }

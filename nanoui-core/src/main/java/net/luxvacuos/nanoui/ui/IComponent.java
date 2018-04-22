@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,18 @@
 
 package net.luxvacuos.nanoui.ui;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
 
 public interface IComponent {
-	
-	public void init();
-	
+
+	public void init(Window window);
+
 	public void render(Window window);
-	
+
 	public void update(float delta, Window window);
-	
+
 	public void alwaysUpdate(float delta, Window window);
-	
+
 	public void dispose(Window window);
 
 }

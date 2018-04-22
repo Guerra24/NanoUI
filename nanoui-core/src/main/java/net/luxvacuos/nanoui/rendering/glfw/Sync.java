@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.luxvacuos.nanoui.rendering.api.glfw;
+package net.luxvacuos.nanoui.rendering.glfw;
 
 /**
  * A highly accurate sync method that continually adapts to the system it runs

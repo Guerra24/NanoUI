@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,16 @@
 package net.luxvacuos.nanoui.ui;
 
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.glfw.Window;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Button extends Component {
 
-	protected String text = "missigno", font = "Segoe UI", entypo = "Segoe MDL2";
+	protected String text = "missigno", font = "Poppins-Regular", entypo = "Entypo";
 	protected String preicon;
 	protected OnAction onPress, rightPress;
-	protected float fontSize = 18, preiconSize = 16;
-	protected boolean pressed = false, pressedRight = false, enabled = true, inside;
+	protected float fontSize = 22;
+	protected boolean pressed = false, pressedRight = false, enabled = true;
 
 	public Button(float x, float y, float w, float h, String text) {
 		this.x = x;
@@ -44,16 +44,22 @@ public class Button extends Component {
 	public void render(Window window) {
 		if (!enabled)
 			return;
-		Theme.renderButton(window.getNVGID(), preicon, text, font, entypo, rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, inside, fontSize, preiconSize);
+		Theme.renderButton(window.getNVGID(), componentState, preicon, text, font, entypo,
+				rootComponent.rootX + alignedX, window.getHeight() - rootComponent.rootY - alignedY - h, w, h, false,
+				fontSize);
 	}
 
 	@Override
 	public void update(float delta, Window window) {
+		super.update(delta, window);
 		if (!enabled)
 			return;
 		MouseHandler mh = window.getMouseHandler();
-		inside = insideButton(mh);
+		if (insideButton(mh)) {
+			componentState = ComponentState.HOVER;
+			if (pressed)
+				componentState = ComponentState.PRESSED;
+		}
 		if (onPress != null)
 			if (pressed(mh) || pressed) {
 				if (!pressed(mh) && pressed)
@@ -67,7 +73,6 @@ public class Button extends Component {
 				pressedRight = pressedRight(mh);
 			}
 
-		super.update(delta, window);
 	}
 
 	public boolean insideButton(MouseHandler mh) {
@@ -115,10 +120,6 @@ public class Button extends Component {
 
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
-	}
-
-	public void setPreiconSize(float preiconSize) {
-		this.preiconSize = preiconSize;
 	}
 
 	public void setEnabled(boolean enabled) {

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2017 Lux Vacuos
+ * Copyright (C) 2016-2018 Lux Vacuos
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,18 @@
  * 
  */
 
-package net.luxvacuos.nanoui.ui;
 
-import net.luxvacuos.nanoui.rendering.api.glfw.Window;
-import net.luxvacuos.nanoui.rendering.api.nanovg.themes.Theme;
+package net.luxvacuos.nanoui.rendering.glfw;
 
-public class TitleBarText extends Text {
+import java.nio.ByteBuffer;
 
-	public TitleBarText(String text, float x, float y) {
-		super(text, x, y);
-	}
+public class Icon {
 
-	@Override
-	public void render(Window window) {
-		w = Theme.renderTitleBarText(window.getNVGID(), text, font, align, rootComponent.rootX + alignedX + 10,
-				window.getHeight() - rootComponent.rootY - alignedY, fontSize) - rootComponent.rootX - alignedX + 10;
+	protected String path;
+	protected ByteBuffer image;
+
+	public Icon(String path) {
+		this.path = path;
 	}
 
 }
