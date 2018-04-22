@@ -1,0 +1,63 @@
+subprojects {
+	apply plugin: "eclipse"
+	apply plugin: "idea"
+	apply plugin: "java"
+
+	project.ext.globalVersion = "0.0.7"
+	sourceCompatibility = 10
+	
+	repositories {
+		mavenCentral()
+		maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+	}
+}
+
+
+project(":nanoui-core") {
+
+	project.ext.lwjglVersion = "3.1.6"
+	project.ext.jomlVersion = "1.9.9"
+
+	dependencies {
+		// LWJGL dependencies
+		compile "org.lwjgl:lwjgl:${lwjglVersion}"
+		compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+		compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+		compile "org.lwjgl:lwjgl-nanovg:${lwjglVersion}"
+		compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
+		// LWJGL natives Windows
+		runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows"
+		runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows"
+		runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
+		runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows"
+		runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-windows"
+		// LWJGL Natives Linux
+		runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
+		runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-linux"
+		runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
+		runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux"
+		runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-linux"
+		
+		compile "org.joml:joml:${jomlVersion}"
+		
+		compile 'net.java.dev.jna:jna-platform:4.5.1'
+		compile 'net.java.dev.jna:jna:4.5.1'
+	}
+}
+
+project(":nanoui-desktop") {
+
+	dependencies {
+		compile project(':nanoui-core')
+	}
+}
+
+project(":nanoui-test") {
+	
+	dependencies {
+		compile project(':nanoui-core')
+	}
+}
+
+task wrapper(type: Wrapper) { gradleVersion = '4.1' }

@@ -1,0 +1,33 @@
+plugins {
+	id 'application'
+	id 'net.nemerosa.versioning' version '2.6.1'
+}
+
+mainClassName = 'net.luxvacuos.nanoui.desktop.TaskBar'
+
+sourceSets {
+	main {
+		java.srcDir("${projectDir}/src/main/java/")
+		resources.srcDir("${projectDir}/src/main/resources")
+	}
+	
+	test {
+		java.srcDirs = ["${projectDir}/src/test/java/"]
+	}
+}
+
+jar {
+	version = project.ext.globalVersion + "-" + versioning.info.full
+	manifest {
+		attributes (
+				"Specification-Title": "NanoUI Taskbar",
+				"Specification-Version": version,
+				"Specification-Vendor": "Lux Vacuos",
+				"Implementation-Title": "net.luxvacuos.nanoui.taskbar",
+				"Implementation-Version": versioning.info.full,
+				"Implementation-Vendor": "Lux Vacuos"
+				)
+	}
+}
+
+
