@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package net.luxvacuos.nanoui.ui;
 
 import org.lwjgl.nanovg.NVGColor;
 
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Box extends Component {
@@ -38,9 +37,8 @@ public class Box extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		Theme.renderBox(window.getNVGID(), rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, color, rt, lt, rb, lb);
+	public void render(float delta) {
+		Theme.renderBox(window.getNVGID(), root.rootX + x, root.rootY + y, w, h, color, rt, lt, rb, lb);
 	}
 
 	public void setColor(float r, float g, float b, float a) {

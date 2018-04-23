@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@ import org.lwjgl.glfw.GLFW;
 
 import com.badlogic.gdx.utils.Array;
 
+import net.luxvacuos.nanoui.core.Application;
+
 public final class WindowHandle {
 
 	protected int width, height;
@@ -39,13 +41,25 @@ public final class WindowHandle {
 		// Reset the window hints
 		GLFW.glfwDefaultWindowHints();
 
-		// Set the window to use OpenGL 3.3 Core with forward compatibility
-		this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-		this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-		this.setWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_API);
-		this.setWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-		this.setWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, true);
-
+		switch (Application.getRenderingAPI()) {
+		case GL:
+			// Set the window to use OpenGL 3.3 Core with forward compatibility
+			this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+			this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+			this.setWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_API);
+			this.setWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+			this.setWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, true);
+			break;
+		case GLES:
+			// Set the window to use OpenGL ES 3.2
+			this.setWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_EGL_CONTEXT_API);
+			this.setWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_ES_API);
+			this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+			this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+			break;
+		default:
+			break;
+		}
 	}
 
 	public WindowHandle canResize(boolean flag) {
@@ -80,7 +94,7 @@ public final class WindowHandle {
 
 	public WindowHandle useDebugContext(boolean flag) {
 		this.setWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, flag);
-		
+
 		return this;
 	}
 
@@ -113,8 +127,8 @@ public final class WindowHandle {
 		this.icons.addAll(icons);
 		return this;
 	}
-	
-	public WindowHandle setCursor(String cursor){
+
+	public WindowHandle setCursor(String cursor) {
 		this.cursor = cursor;
 		return this;
 	}

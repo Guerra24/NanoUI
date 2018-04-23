@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +23,12 @@ package net.luxvacuos.nanoui.core;
 public class Variables {
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
-	public static int X = 0;
-	public static int Y = 0;
-	public static String TITLE = "";
 	public static boolean DEBUG = false;
-	public static boolean DECORATED = true;
-	public static boolean ALWAYS_ON_TOP = false;
 	public static int SCROLLBAR_SIZE = 16;
-
+	public static boolean GLES = false;
+	public static String THEME = "Nano";
+	
+	public static int UPS = 60;
+	public static int FPS = 60;
+	
 }

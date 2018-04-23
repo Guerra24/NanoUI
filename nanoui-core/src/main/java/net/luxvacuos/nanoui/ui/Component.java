@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,128 +24,25 @@ import net.luxvacuos.nanoui.rendering.glfw.Window;
 
 public abstract class Component implements IComponent {
 
-	protected Root rootComponent;
-	protected Alignment alignment = Alignment.RIGHT_TOP, windowAlignment = Alignment.LEFT_BOTTOM;
-	protected float alignedX, alignedY, x, y, w, h;
-	protected boolean resizeH = false, resizeV = false;
+	protected Root root;
+	protected float x, y, w, h;
 	protected ComponentState componentState = ComponentState.NONE;
+	protected Window window;
+	boolean initialized;
 
 	@Override
 	public void init(Window window) {
+		initialized = true;
+		this.window = window;
 	}
 
 	@Override
-	public void update(float delta, Window window) {
+	public void update(float delta) {
 		componentState = ComponentState.NONE;
 	}
-
+	
 	@Override
-	public void alwaysUpdate(float delta, Window window) {
-		switch (alignment) {
-		case LEFT:
-			alignedX = x;
-			alignedY = y - h / 2;
-			break;
-		case CENTER:
-			alignedX = x - w / 2;
-			alignedY = y - h / 2;
-			break;
-		case RIGHT:
-			alignedX = x - w;
-			alignedY = y - h / 2;
-			break;
-		case BOTTOM:
-			alignedX = x - w / 2;
-			alignedY = y - h;
-			break;
-		case TOP:
-			alignedX = x - w / 2;
-			alignedY = y;
-			break;
-		case LEFT_BOTTOM:
-			alignedX = x - w;
-			alignedY = y - h;
-			break;
-		case LEFT_TOP:
-			alignedX = x - w;
-			alignedY = y;
-			break;
-		case RIGHT_BOTTOM:
-			alignedX = x;
-			alignedY = y - h;
-			break;
-		case RIGHT_TOP:
-			alignedX = x;
-			alignedY = y;
-			break;
-		default:
-			throw new UnsupportedOperationException("Invalid Alignment: " + alignment.name());
-		}
-		switch (windowAlignment) {
-		case LEFT:
-			alignedX += 2;
-			alignedY += rootComponent.rootH / 2;
-			break;
-		case CENTER:
-			alignedX += rootComponent.rootW / 2;
-			alignedY += rootComponent.rootH / 2;
-			break;
-		case RIGHT:
-			alignedX += rootComponent.rootW;
-			alignedY += rootComponent.rootH / 2;
-			break;
-		case BOTTOM:
-			alignedX += rootComponent.rootW / 2;
-			alignedY += 0;
-			break;
-		case TOP:
-			alignedX += rootComponent.rootW / 2;
-			alignedY += rootComponent.rootH;
-			break;
-		case LEFT_BOTTOM:
-			alignedX += 0;
-			alignedY += 0;
-			break;
-		case LEFT_TOP:
-			alignedX += 0;
-			alignedY += rootComponent.rootH;
-			break;
-		case RIGHT_BOTTOM:
-			alignedX += rootComponent.rootW;
-			alignedY += 0;
-			break;
-		case RIGHT_TOP:
-			alignedX += rootComponent.rootW;
-			alignedY += rootComponent.rootH;
-			break;
-		default:
-			throw new UnsupportedOperationException("Invalid Alignment: " + windowAlignment.name());
-		}
-		if (resizeH)
-			w = rootComponent.rootW - x;
-		if (resizeV)
-			h = rootComponent.rootH - y;
-
-	}
-
-	@Override
-	public void dispose(Window window) {
-	}
-
-	public void setAlignment(Alignment alignment) {
-		this.alignment = alignment;
-	}
-
-	public void setWindowAlignment(Alignment windowAlignment) {
-		this.windowAlignment = windowAlignment;
-	}
-
-	public void setResizeH(boolean resizeH) {
-		this.resizeH = resizeH;
-	}
-
-	public void setResizeV(boolean resizeV) {
-		this.resizeV = resizeV;
+	public void dispose() {
 	}
 
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package net.luxvacuos.nanoui.ui;
 
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Spinner extends Component {
@@ -37,20 +36,13 @@ public class Spinner extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		Theme.renderSpinner(window.getNVGID(), rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, r, progress);
+	public void render(float delta) {
+		Theme.renderSpinner(window.getNVGID(), root.rootX + x, root.rootY + y, r, progress);
 	}
 
 	@Override
-	public void alwaysUpdate(float delta, Window window) {
-		super.alwaysUpdate(delta, window);
+	public void update(float delta) {
 		progress += 1 * delta;
-	}
-
-	@Override
-	public void setAlignment(Alignment alignment) {
-		throw new UnsupportedOperationException("Not Available");
 	}
 
 }

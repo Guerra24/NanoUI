@@ -83,7 +83,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 
 	/** Creates a new map identical to the specified map. */
 	public ObjectMap (ObjectMap<? extends K, ? extends V> map) {
-		this(map.capacity, map.loadFactor);
+		this((int)Math.floor(map.capacity * map.loadFactor), map.loadFactor);
 		stashSize = map.stashSize;
 		System.arraycopy(map.keyTable, 0, keyTable, 0, map.keyTable.length);
 		System.arraycopy(map.valueTable, 0, valueTable, 0, map.valueTable.length);
@@ -285,6 +285,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 		size++;
 	}
 
+	/** Returns the value for the specified key, or null if the key is not in the map. */
 	public V get (K key) {
 		int hashCode = key.hashCode();
 		int index = hashCode & mask;
@@ -292,17 +293,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>> {
 			index = hash2(hashCode);
 			if (!key.equals(keyTable[index])) {
 				index = hash3(hashCode);
-				if (!key.equals(keyTable[index])) return getStash(key);
+				if (!key.equals(keyTable[index])) return getStash(key, null);
 			}
 		}
 		return valueTable[index];
-	}
-
-	private V getStash (K key) {
-		K[] keyTable = this.keyTable;
-		for (int i = capacity, n = i + stashSize; i < n; i++)
-			if (key.equals(keyTable[i])) return valueTable[i];
-		return null;
 	}
 
 	/** Returns the value for the specified key, or the default value if the key is not in the map. */

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import org.lwjgl.glfw.GLFW;
 
 import net.luxvacuos.nanoui.input.KeyboardHandler;
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class EditBox extends Component {
@@ -42,14 +41,14 @@ public class EditBox extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		Theme.renderEditBox(window.getNVGID(), componentState, text, font, rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, fontSize, selected);
+	public void render(float delta) {
+		Theme.renderEditBox(window.getNVGID(), componentState, text, font, root.rootX + x, root.rootY + y, w, h,
+				fontSize, selected);
 	}
 
 	@Override
-	public void update(float delta, Window window) {
-		super.update(delta, window);
+	public void update(float delta) {
+		super.update(delta);
 		KeyboardHandler kb = window.getKeyboardHandler();
 		MouseHandler mh = window.getMouseHandler();
 		if (insideBox(mh))
@@ -83,8 +82,8 @@ public class EditBox extends Component {
 	}
 
 	public boolean insideBox(MouseHandler mh) {
-		return mh.getX() > rootComponent.rootX + alignedX && mh.getY() > rootComponent.rootY + alignedY
-				&& mh.getX() < rootComponent.rootX + alignedX + w && mh.getY() < rootComponent.rootY + alignedY + h;
+		return mh.getX() > root.rootX + x && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w
+				&& mh.getY() < root.rootY + y + h;
 	}
 
 	public void setFontSize(float fontSize) {

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ public class KeyboardKeyCallback extends GLFWKeyCallback {
 	public void invoke(long window, int key, int scancode, int action, int mods) {
 		if(window != this.windowID) return; //only care about the window this callback is assigned to
 		if(key < 0 || key > 65535) {
+			System.out.println("WARNING: Caught invalid key! (Key: "+key+", scancode: "+scancode+", pressed: "+(action != GLFW.GLFW_RELEASE)+")");
 			return;
 		}
 		

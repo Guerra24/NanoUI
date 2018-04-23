@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package net.luxvacuos.nanoui.ui;
 
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 import net.luxvacuos.nanoui.util.Maths;
 
@@ -40,29 +39,28 @@ public class Slider extends Component {
 	}
 
 	@Override
-	public void update(float delta, Window window) {
+	public void update(float delta) {
 		MouseHandler mh = window.getMouseHandler();
 		if ((mh.isButtonPressed(0) && insideSlider(mh)) || move) {
 			move = mh.isButtonPressed(0);
-			pos = (mh.getX() - rootComponent.rootX - alignedX) / w;
+			pos = (mh.getX() - root.rootX - x) / w;
 			if (customPrecision)
 				pos = (float) (Math.floor(pos * precision) / precision);
 			pos = Maths.clamp(pos, 0, 1);
 			if (onPress != null)
 				onPress.onAction();
 		}
-		super.update(delta, window);
+		super.update(delta);
 	}
 
 	@Override
-	public void render(Window window) {
-		Theme.renderSlider(window.getNVGID(), componentState, pos, rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h);
+	public void render(float delta) {
+		Theme.renderSlider(window.getNVGID(), componentState, pos, root.rootX + x, root.rootY + y, w, h);
 	}
 
 	public boolean insideSlider(MouseHandler mh) {
-		return mh.getX() > rootComponent.rootX + alignedX - 6 && mh.getY() > rootComponent.rootY + alignedY
-				&& mh.getX() < rootComponent.rootX + alignedX + w + 6 && mh.getY() < rootComponent.rootY + alignedY + h;
+		return mh.getX() > root.rootX + x - 6 && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w + 6
+				&& mh.getY() < root.rootY + y + h;
 	}
 
 	public void setOnPress(OnAction onPress) {

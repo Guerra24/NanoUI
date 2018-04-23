@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ import net.luxvacuos.nanoui.input.callbacks.MouseButtonCallback;
 import net.luxvacuos.nanoui.input.callbacks.MouseEnterCallback;
 import net.luxvacuos.nanoui.input.callbacks.MousePosCallback;
 import net.luxvacuos.nanoui.input.callbacks.MouseScrollCallback;
-import net.luxvacuos.nanoui.rendering.glfw.AbstractWindow;
 
 public class MouseHandler {
 
@@ -37,10 +36,8 @@ public class MouseHandler {
 	private final MouseScrollCallback scrollCallback;
 
 	private final long windowID;
-	@Deprecated
-	private final AbstractWindow window; // Temporary
 
-	public MouseHandler(long windowID, AbstractWindow window) {
+	public MouseHandler(long windowID) {
 		this.enterCallback = new MouseEnterCallback(windowID);
 		this.posCallback = new MousePosCallback(windowID);
 		this.buttonCallback = new MouseButtonCallback(windowID);
@@ -52,10 +49,8 @@ public class MouseHandler {
 		GLFW.glfwSetCursorPosCallback(windowID, this.posCallback);
 		GLFW.glfwSetMouseButtonCallback(windowID, this.buttonCallback);
 		GLFW.glfwSetScrollCallback(windowID, this.scrollCallback);
-
-		this.window = window;
 	}
-	
+
 	public void update() {
 		this.posCallback.update();
 	}
@@ -73,7 +68,21 @@ public class MouseHandler {
 
 	public float getY() {
 		if (this.isInside())
-			return (float) (window.getHeight() - this.posCallback.getY());
+			return (float) this.posCallback.getY();
+		else
+			return -1;
+	}
+
+	public int getXI() {
+		if (this.isInside())
+			return (int) this.posCallback.getX();
+		else
+			return -1;
+	}
+
+	public int getYI() {
+		if (this.isInside())
+			return (int) this.posCallback.getY();
 		else
 			return -1;
 	}
@@ -107,7 +116,8 @@ public class MouseHandler {
 	}
 
 	public static void setGrabbed(long windowID, boolean grab) {
-		TaskManager.addTask(() -> GLFW.glfwSetInputMode(windowID, GLFW.GLFW_CURSOR,
+		TaskManager.tm.addTaskMainThread(() -> GLFW.glfwSetInputMode(windowID, GLFW.GLFW_CURSOR,
 				grab ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL));
 	}
+
 }

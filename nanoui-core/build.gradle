@@ -1,30 +1,77 @@
 plugins {
 	id 'net.nemerosa.versioning' version '2.6.1'
+	id 'eclipse'
+	id 'idea'
+	id 'java'
 }
+
+sourceCompatibility = '10'
+project.ext.lwjglVersion = "3.1.6"
+project.ext.jomlVersion = "1.9.9"
 
 sourceSets {
 	main {
 		java.srcDir("${projectDir}/src/main/java/")
-		resources.srcDir("${projectDir}/src/main/resources")
+		resources.srcDir("${projectDir}/src/main/resources/")
 	}
-	
+
 	test {
 		java.srcDirs = ["${projectDir}/src/test/java/"]
-	}
+		resources.srcDir("${projectDir}/src/test/resources/")
+	}	
+}
+
+dependencies {
+	// LWJGL dependencies
+	compile "org.lwjgl:lwjgl:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-nanovg:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
+	compile "org.lwjgl:lwjgl-egl:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion"
+	
+	// LWJGL natives Windows
+	runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-windows"
+	runtime "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows"
+	// LWJGL Natives Linux
+	runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-linux"
+	runtime "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux"
+	// LWJGL Natives OSX
+	runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-macos"
+	runtime "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos"
+	
+	compile "org.joml:joml:${jomlVersion}"
 }
 
 jar {
-	version = project.ext.globalVersion + "-" + versioning.info.full
+	version = project.ext.globalVersion + "-" + versioning.info.branchId + "-" + 'git rev-list --count HEAD'.execute().text.trim()
 	manifest {
 		attributes (
-				"Specification-Title": "NanoUI",
-				"Specification-Version": version,
-				"Specification-Vendor": "Lux Vacuos",
-				"Implementation-Title": "net.luxvacuos.nanoui",
-				"Implementation-Version": versioning.info.full,
-				"Implementation-Vendor": "Lux Vacuos"
-				)
+			"Implementation-Title": "net.luxvacuos.nanoui",
+			"Implementation-Version": version,
+			"Implementation-Vendor": "Lux Vacuos",
+			"Build": 'git rev-list --count HEAD'.execute().text.trim(),
+			"Branch": versioning.info.branchId,
+			"Version": project.ext.globalVersion
+			)
 	}
+	manifest.writeTo("$buildDir/" + project.name + "-version.mf")
+	from "$buildDir/" + project.name + "-version.mf"
 }
-
-

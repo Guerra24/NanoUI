@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE;
 
 import org.lwjgl.nanovg.NVGColor;
 
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Text extends Component {
@@ -41,9 +40,9 @@ public class Text extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		w = Theme.renderText(window.getNVGID(), text, font, align, rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY, fontSize, color) - rootComponent.rootX - alignedX;
+	public void render(float delta) {
+		w = Theme.renderText(window.getNVGID(), text, font, align, root.rootX + x, root.rootY + y, fontSize, color)
+				- root.rootX - x;
 	}
 
 	public void setAlign(int align) {
@@ -67,11 +66,6 @@ public class Text extends Component {
 
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
-	}
-
-	@Override
-	public void setAlignment(Alignment alignment) {
-		throw new UnsupportedOperationException("Please use setAlign method for text alignment");
 	}
 
 }

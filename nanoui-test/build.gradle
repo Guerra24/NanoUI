@@ -1,10 +1,46 @@
+plugins {
+	id 'net.nemerosa.versioning' version '2.6.1'
+	id 'eclipse'
+	id 'idea'
+	id 'java'
+	id 'application'
+}
+
+mainClassName = 'net.luxvacuos.lightengine.client.bootstrap.Bootstrap'
+sourceCompatibility = '10'
+
 sourceSets {
 	main {
 		java.srcDir("${projectDir}/src/main/java/")
-		resources.srcDir("${projectDir}/src/main/resources")
+		resources.srcDir("${projectDir}/src/main/resources/")
 	}
-	
+
 	test {
 		java.srcDirs = ["${projectDir}/src/test/java/"]
+		resources.srcDir("${projectDir}/src/test/resources/")
+	}	
+}
+
+dependencies {
+	compile project(':nanoui-core')
+}
+
+jar {
+	version = project.ext.globalVersion + "-" + versioning.info.branchId + "-" + 'git rev-list --count HEAD'.execute().text.trim()
+	manifest {
+		attributes (
+			"Implementation-Title": "net.luxvacuos.nanoui",
+			"Implementation-Version": version,
+			"Implementation-Vendor": "Lux Vacuos",
+			"Build": 'git rev-list --count HEAD'.execute().text.trim(),
+			"Branch": versioning.info.branchId,
+			"Version": project.ext.globalVersion
+			)
 	}
+	manifest.writeTo("$buildDir/" + project.name + "-version.mf")
+	from "$buildDir/" + project.name + "-version.mf"
+}
+
+if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+	applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
 }

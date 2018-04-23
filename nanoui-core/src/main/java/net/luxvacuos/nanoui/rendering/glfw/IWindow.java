@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ public interface IWindow extends IDisposable {
 	public void closeDisplay();
 
 	public void setVisible(boolean flag);
-	
+
 	public float getDelta();
 
 }

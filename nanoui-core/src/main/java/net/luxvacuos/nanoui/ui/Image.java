@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ package net.luxvacuos.nanoui.ui;
 import static org.lwjgl.nanovg.NanoVG.nvgDeleteImage;
 
 import net.luxvacuos.nanoui.core.TaskManager;
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Image extends Component {
@@ -49,16 +48,14 @@ public class Image extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		Theme.renderImage(window.getNVGID(), rootComponent.rootX + alignedX,
-				window.getHeight() - rootComponent.rootY - alignedY - h, w, h, image, 1);
+	public void render(float delta) {
+		Theme.renderImage(window.getNVGID(), root.rootX + x, root.rootY + y, w, h, image, 1);
 	}
 
 	@Override
-	public void dispose(Window window) {
-		super.dispose(window);
+	public void dispose() {
 		if (deleteOnClose)
-			TaskManager.addTask(() -> nvgDeleteImage(window.getNVGID(), image));
+			TaskManager.tm.addTaskRenderThread(() -> nvgDeleteImage(window.getNVGID(), image));
 	}
 
 	public void setImage(int image) {

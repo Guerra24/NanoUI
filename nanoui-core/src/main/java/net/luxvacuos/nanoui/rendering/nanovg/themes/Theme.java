@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public class Theme {
 	public static final NVGColor colorB = NVGColor.create();
 	public static final NVGColor colorC = NVGColor.create();
 
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final float DEBUG_STROKE = 2;
 
 	public static final NVGColor debugA = setColor(1, 0, 0, 1);

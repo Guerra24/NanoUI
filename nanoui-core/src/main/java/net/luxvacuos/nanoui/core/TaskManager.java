@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2017 Guerra24
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,77 @@ package net.luxvacuos.nanoui.core;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.badlogic.gdx.utils.async.AsyncExecutor;
+
 public class TaskManager {
 
-	private static Queue<Runnable> tasks = new LinkedList<>();
+	public static TaskManager tm;
 
-	public static void update() {
-		if (!tasks.isEmpty()) {
-			tasks.poll().run();
+	private Queue<Runnable> tasksMainThread = new LinkedList<>(), tasksBackgroundThread = new LinkedList<>(),
+			tasksRenderThread = new LinkedList<>();
+	private AsyncExecutor asyncExecutor;
+	private Thread backgroundThread;
+	private boolean syncInterrupt;
+
+	public void init() {
+		asyncExecutor = new AsyncExecutor(2);
+		backgroundThread = new Thread(() -> {
+			while (true) {
+				if (!tasksBackgroundThread.isEmpty()) {
+					while (!tasksBackgroundThread.isEmpty())
+						tasksBackgroundThread.poll().run();
+				} else {
+					try {
+						syncInterrupt = false;
+						Thread.sleep(1000000l);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		});
+		backgroundThread.setDaemon(true);
+		backgroundThread.setName("Background Thread");
+		backgroundThread.start();
+	}
+
+	public void addTaskMainThread(Runnable task) {
+		if (task != null)
+			tasksMainThread.add(task);
+	}
+
+	public void addTaskBackgroundThread(Runnable task) {
+		if (task != null) {
+			tasksBackgroundThread.add(task);
+			if (!syncInterrupt) {
+				syncInterrupt = true;
+				backgroundThread.interrupt();
+			}
 		}
 	}
 
-	public static void addTask(Runnable task) {
-		tasks.add(task);
+	public void updateMainThread() {
+		if (!tasksMainThread.isEmpty()) {
+			tasksMainThread.poll().run();
+		}
 	}
 
-	public static boolean isEmpty() {
-		return tasks.isEmpty();
+	public void addTaskRenderThread(Runnable task) {
+		if (task != null)
+			tasksRenderThread.add(task);
+	}
+
+	public void updateRenderThread() {
+		if (!tasksRenderThread.isEmpty()) {
+			tasksRenderThread.poll().run();
+		}
+	}
+
+	public boolean isEmpty() {
+		return tasksMainThread.isEmpty() && tasksBackgroundThread.isEmpty() && tasksRenderThread.isEmpty();
+	}
+
+	public AsyncExecutor getAsyncExecutor() {
+		return asyncExecutor;
 	}
 
 }

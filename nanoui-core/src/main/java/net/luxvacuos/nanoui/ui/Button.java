@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package net.luxvacuos.nanoui.ui;
 
 import net.luxvacuos.nanoui.input.MouseHandler;
-import net.luxvacuos.nanoui.rendering.glfw.Window;
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
 
 public class Button extends Component {
@@ -30,7 +29,7 @@ public class Button extends Component {
 	protected String preicon;
 	protected OnAction onPress, rightPress;
 	protected float fontSize = 22;
-	protected boolean pressed = false, pressedRight = false, enabled = true;
+	protected boolean pressed = false, pressedRight = false;
 
 	public Button(float x, float y, float w, float h, String text) {
 		this.x = x;
@@ -41,19 +40,14 @@ public class Button extends Component {
 	}
 
 	@Override
-	public void render(Window window) {
-		if (!enabled)
-			return;
-		Theme.renderButton(window.getNVGID(), componentState, preicon, text, font, entypo,
-				rootComponent.rootX + alignedX, window.getHeight() - rootComponent.rootY - alignedY - h, w, h, false,
-				fontSize);
+	public void render(float delta) {
+		Theme.renderButton(window.getNVGID(), componentState, preicon, text, font, entypo, root.rootX + x,
+				root.rootY + y, w, h, false, fontSize);
 	}
 
 	@Override
-	public void update(float delta, Window window) {
-		super.update(delta, window);
-		if (!enabled)
-			return;
+	public void update(float delta) {
+		super.update(delta);
 		MouseHandler mh = window.getMouseHandler();
 		if (insideButton(mh)) {
 			componentState = ComponentState.HOVER;
@@ -76,8 +70,8 @@ public class Button extends Component {
 	}
 
 	public boolean insideButton(MouseHandler mh) {
-		return mh.getX() >= rootComponent.rootX + alignedX && mh.getY() > rootComponent.rootY + alignedY
-				&& mh.getX() < rootComponent.rootX + alignedX + w && mh.getY() <= rootComponent.rootY + alignedY + h;
+		return mh.getX() >= root.rootX + x && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w
+				&& mh.getY() <= root.rootY + y + h;
 	}
 
 	public boolean pressed(MouseHandler mh) {
@@ -120,14 +114,6 @@ public class Button extends Component {
 
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
 	}
 
 }

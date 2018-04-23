@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,6 @@ package net.luxvacuos.nanoui.rendering.glfw;
 
 public interface OnRefresh {
 	
-	public void onRefresh(long windowID);
+	public void onRefresh();
 
 }

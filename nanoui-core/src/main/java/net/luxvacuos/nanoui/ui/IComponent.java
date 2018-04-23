@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,10 @@ public interface IComponent {
 
 	public void init(Window window);
 
-	public void render(Window window);
+	public void render(float delta);
 
-	public void update(float delta, Window window);
+	public void update(float delta);
 
-	public void alwaysUpdate(float delta, Window window);
-
-	public void dispose(Window window);
+	public void dispose();
 
 }

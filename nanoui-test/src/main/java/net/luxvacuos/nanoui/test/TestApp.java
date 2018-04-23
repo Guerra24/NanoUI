@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2017 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,74 +20,26 @@
 
 package net.luxvacuos.nanoui.test;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-
-import net.luxvacuos.nanoui.bootstrap.Bootstrap;
-import net.luxvacuos.nanoui.core.App;
-import net.luxvacuos.nanoui.core.AppUI;
-import net.luxvacuos.nanoui.core.Variables;
-import net.luxvacuos.nanoui.core.states.AbstractState;
-import net.luxvacuos.nanoui.core.states.StateMachine;
-import net.luxvacuos.nanoui.input.KeyboardHandler;
-import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.core.Application;
 import net.luxvacuos.nanoui.ui.Button;
-import net.luxvacuos.nanoui.ui.ComponentWindow;
-import net.luxvacuos.nanoui.ui.EditBox;
+import net.luxvacuos.nanoui.ui.Page;
 
-public class TestApp extends AbstractState {
-
-	private ComponentWindow window;
-
-	public TestApp() {
-		super("_main");
-	}
-
-	@Override
-	public void start() {
-
-		window = new ComponentWindow(AppUI.getMainWindow());
-		window.initApp();
-
-		EditBox ttbox = new EditBox(10, 10, 400, 30, "");
-		window.addComponent(ttbox);
-		Button btn = new Button(0,0,200,30, "Button");
-		window.addComponent(btn);
-
-		AppUI.getMainWindow().setVisible(true);
-		super.start();
-	}
-
-	@Override
-	public void end() {
-		window.disposeApp();
-		super.end();
-	}
-
-	@Override
-	public void update(float delta) {
-		window.updateApp(delta);
-		window.alwaysUpdateApp(delta);
-		KeyboardHandler kbh = AppUI.getMainWindow().getKeyboardHandler();
-		if (kbh.isShiftPressed() && kbh.isKeyPressed(GLFW.GLFW_KEY_ESCAPE))
-			StateMachine.stop();
-	}
-
-	@Override
-	public void render(float alpha) {
-		AppUI.clearBuffer(GL11.GL_COLOR_BUFFER_BIT);
-		AppUI.clearColors(0f, 0f, 0f, 1);
-		window.renderApp();
-	}
+public class TestApp extends Application {
 
 	public static void main(String[] args) {
-		new Bootstrap(args);
-		Variables.WIDTH = 800;
-		Variables.HEIGHT = 600;
-		Variables.X = 200;
-		Variables.Y = 200;
-		Variables.TITLE = "";
-		new App(new TestApp());
+		new TestApp();
+	}
+
+	@Override
+	public void onLaunched() {
+		Page p = new Page();
+		p.addComponent(new Button(0, 0, 200, 20, "Test Btn"));
+		super.currentFrame.navigate(p);
+		super.setWindowTitle("TestApp");
+	}
+
+	@Override
+	public void onClosed() {
 	}
 
 }

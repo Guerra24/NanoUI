@@ -31,6 +31,8 @@
  */
 package net.luxvacuos.nanoui.rendering.glfw;
 
+import org.lwjgl.glfw.GLFW;
+
 /**
  * A highly accurate sync method that continually adapts to the system it runs
  * on to provide reliable results.
@@ -38,21 +40,7 @@ package net.luxvacuos.nanoui.rendering.glfw;
  * @author Riven
  * @author kappaOne
  */
-public class Sync {
-	
-	static {
-		if (System.getProperty("os.name").startsWith("Win")) {
-			Thread timerAccuracyThread = new Thread(() -> {
-				try {
-					Thread.sleep(Long.MAX_VALUE);
-				} catch (Exception e) {
-				}
-			});
-			timerAccuracyThread.setName("LWJGL Timer");
-			timerAccuracyThread.setDaemon(true);
-			timerAccuracyThread.start();
-		}
-	}
+public class ClientSync {
 
 	private static final long NANOS_IN_SECOND = 1000L * 1000L * 1000L;
 	private long nextFrame = 0;
@@ -81,14 +69,19 @@ public class Sync {
 		nextFrame = Math.max(nextFrame + NANOS_IN_SECOND / fps, getTime());
 	}
 
-	public Sync() {
+	public ClientSync() {
 		sleepDurations.init(1000 * 1000);
 		yieldDurations.init((int) (-(getTime() - getTime()) * 1.333));
 		nextFrame = getTime();
 	}
 
+	/**
+	 * Get the system time in nano seconds
+	 * 
+	 * @return will return the current time in nano's
+	 */
 	private static long getTime() {
-		return System.nanoTime();
+		return ((long) (GLFW.glfwGetTime() * 1000) * NANOS_IN_SECOND) / 1000;
 	}
 
 	private class RunningAvg {

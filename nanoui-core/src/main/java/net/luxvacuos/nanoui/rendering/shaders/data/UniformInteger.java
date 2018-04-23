@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Lux Vacuos
+ * Copyright (C) 2016-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,25 @@
  * 
  */
 
-package net.luxvacuos.nanoui.core.states;
+package net.luxvacuos.nanoui.rendering.shaders.data;
 
-public interface IState {
+import net.luxvacuos.nanoui.rendering.GL;
 
-	public void init();
+public class UniformInteger extends Uniform {
 
-	public void start();
+	private int currentValue;
+	private boolean used = false;
 
-	public boolean isRunning();
+	public UniformInteger(String name) {
+		super(name);
+	}
 
-	public void update(float delta);
-
-	public void render(float alpha);
-
-	public void end();
-
-	public String getName();
+	public void loadInteger(int value) {
+		if (!used || currentValue != value) {
+			GL.glUniform1i(super.getLocation(), value);
+			used = true;
+			currentValue = value;
+		}
+	}
 
 }
