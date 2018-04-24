@@ -41,8 +41,8 @@ public class Text extends Component {
 
 	@Override
 	public void render(float delta) {
-		w = Theme.renderText(window.getNVGID(), text, font, align, root.rootX + x, root.rootY + y, fontSize, color)
-				- root.rootX - x;
+		w = Theme.renderText(window.getNVGID(), text, font, align, root.rootX + fx, root.rootY + fy, fontSize, color)
+				- root.rootX - fx;
 	}
 
 	public void setAlign(int align) {

@@ -43,7 +43,7 @@ public class Slider extends Component {
 		MouseHandler mh = window.getMouseHandler();
 		if ((mh.isButtonPressed(0) && insideSlider(mh)) || move) {
 			move = mh.isButtonPressed(0);
-			pos = (mh.getX() - root.rootX - x) / w;
+			pos = (mh.getX() - root.rootX - fx) / w;
 			if (customPrecision)
 				pos = (float) (Math.floor(pos * precision) / precision);
 			pos = Maths.clamp(pos, 0, 1);
@@ -55,12 +55,12 @@ public class Slider extends Component {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderSlider(window.getNVGID(), componentState, pos, root.rootX + x, root.rootY + y, w, h);
+		Theme.renderSlider(window.getNVGID(), componentState, pos, root.rootX + fx, root.rootY + fy, w, h);
 	}
 
 	public boolean insideSlider(MouseHandler mh) {
-		return mh.getX() > root.rootX + x - 6 && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w + 6
-				&& mh.getY() < root.rootY + y + h;
+		return mh.getX() > root.rootX + fx - 6 && mh.getY() > root.rootY + y && mh.getX() < root.rootX + fx + w + 6
+				&& mh.getY() < root.rootY + fy + h;
 	}
 
 	public void setOnPress(OnAction onPress) {

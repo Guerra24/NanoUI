@@ -42,7 +42,7 @@ public class EditBox extends Component {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderEditBox(window.getNVGID(), componentState, text, font, root.rootX + x, root.rootY + y, w, h,
+		Theme.renderEditBox(window.getNVGID(), componentState, text, font, root.rootX + fx, root.rootY + fy, w, h,
 				fontSize, selected);
 	}
 
@@ -82,8 +82,8 @@ public class EditBox extends Component {
 	}
 
 	public boolean insideBox(MouseHandler mh) {
-		return mh.getX() > root.rootX + x && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w
-				&& mh.getY() < root.rootY + y + h;
+		return mh.getX() > root.rootX + fx && mh.getY() > root.rootY + fy && mh.getX() < root.rootX + fx + w
+				&& mh.getY() < root.rootY + fy + h;
 	}
 
 	public void setFontSize(float fontSize) {

@@ -49,7 +49,7 @@ public class Image extends Component {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderImage(window.getNVGID(), root.rootX + x, root.rootY + y, w, h, image, 1);
+		Theme.renderImage(window.getNVGID(), root.rootX + fx, root.rootY + fy, w, h, image, 1);
 	}
 
 	@Override

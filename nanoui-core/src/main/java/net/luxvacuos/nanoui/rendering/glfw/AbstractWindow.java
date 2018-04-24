@@ -327,6 +327,10 @@ public abstract class AbstractWindow implements IWindow {
 		return this.resourceLoader;
 	}
 
+	public void setResourceLoader(IResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
 	public KeyboardHandler getKeyboardHandler() {
 		return this.kbHandle;
 	}

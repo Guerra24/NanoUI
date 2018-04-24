@@ -25,9 +25,12 @@ import net.luxvacuos.nanoui.rendering.glfw.Window;
 public abstract class Component implements IComponent {
 
 	protected Root root;
-	protected float x, y, w, h;
+	protected float x, y, w, h, fx, fy, fw, fh, mx, my, mw, mh, hx, hy, hw, hh;
+	protected float ml, mt, mr, mb, pl, pt, pr, pb;
 	protected ComponentState componentState = ComponentState.NONE;
 	protected Window window;
+	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.RIGHT;
+	protected VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 	boolean initialized;
 
 	@Override
@@ -39,10 +42,84 @@ public abstract class Component implements IComponent {
 	@Override
 	public void update(float delta) {
 		componentState = ComponentState.NONE;
+		switch (horizontalAlignment) {
+		case LEFT:
+			hx = x;
+			hw = w;
+			break;
+		case CENTER:
+			hx = x - w / 2f + root.rootW / 2f;
+			hw = w;
+			break;
+		case RIGHT:
+			hx = root.rootW - x - w;
+			hw = w;
+			break;
+		case STRETCH:
+			hx = root.rootX;
+			hw = root.rootW;
+			break;
+		}
+		switch (verticalAlignment) {
+		case TOP:
+			hy = y;
+			hh = h;
+			break;
+		case CENTER:
+			hy = y - h / 2f + root.rootH / 2f;
+			hh = h;
+			break;
+		case BOTTOM:
+			hy = root.rootH - y - h;
+			hh = h;
+			break;
+		case STRETCH:
+			hy = root.rootY;
+			hh = root.rootH;
+			break;
+		}
+		mx = hx + ml;
+		my = hy + mt;
+		mw = hw + mr;
+		mh = hh + mb;
+		fx = mx + pl;
+		fy = my + pt;
+		fw = mw - pr;
+		fh = mh - pb;
 	}
-	
+
 	@Override
 	public void dispose() {
+	}
+
+	public void setMargin(float ml, float mt, float mr, float mb) {
+		this.ml = ml;
+		this.mt = mt;
+		this.mr = mr;
+		this.mb = mb;
+	}
+
+	public void setPadding(float pl, float pt, float pr, float pb) {
+		this.pl = pl;
+		this.pt = pt;
+		this.pr = pr;
+		this.pb = pb;
+	}
+
+	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	public void setVerticalAlignment(VerticalAlignment verticalAlignment) {
+		this.verticalAlignment = verticalAlignment;
+	}
+
+	public enum HorizontalAlignment {
+		LEFT, CENTER, RIGHT, STRETCH
+	}
+
+	public enum VerticalAlignment {
+		TOP, CENTER, BOTTOM, STRETCH
 	}
 
 }

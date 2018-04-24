@@ -61,7 +61,7 @@ public class Theme {
 	public static final NVGColor debugE = setColor(1, 1, 1, 1);
 
 	public enum ButtonStyle {
-		CLOSE, MAXIMIZE, MINIMIZE, NONE, LEFT_ARROW, RIGHT_ARROW
+		CLOSE, MAXIMIZE, MINIMIZE, NONE, LEFT_ARROW, RIGHT_ARROW, RESTORE
 	};
 
 	public enum BackgroundStyle {

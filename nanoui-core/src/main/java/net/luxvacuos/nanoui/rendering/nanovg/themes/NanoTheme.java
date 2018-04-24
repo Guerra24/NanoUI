@@ -270,6 +270,21 @@ public class NanoTheme implements ITheme {
 			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
 			nvgStroke(vg);
 			break;
+		case RESTORE:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2 - 6 - 2, y + h / 2 - 6 - 2);
+			nvgLineTo(vg, x + w / 2 + 6 - 2, y + h / 2 - 6 - 2);
+			nvgLineTo(vg, x + w / 2 + 6 - 2, y + h / 2 + 6 - 2);
+			nvgLineTo(vg, x + w / 2 - 6 - 2, y + h / 2 + 6 - 2);
+			nvgLineTo(vg, x + w / 2 - 6 - 2, y + h / 2 - 6 - 2);
+			nvgMoveTo(vg, x + w / 2 - 6 + 2, y + h / 2 - 6 + 2);
+			nvgLineTo(vg, x + w / 2 + 6 + 2, y + h / 2 - 6 + 2);
+			nvgLineTo(vg, x + w / 2 + 6 + 2, y + h / 2 + 6 + 2);
+			nvgLineTo(vg, x + w / 2 - 6 + 2, y + h / 2 + 6 + 2);
+			nvgLineTo(vg, x + w / 2 - 6 + 2, y + h / 2 - 6 + 2);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
 		case NONE:
 			break;
 		}

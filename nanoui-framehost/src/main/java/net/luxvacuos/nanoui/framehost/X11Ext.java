@@ -31,6 +31,8 @@ import com.sun.jna.platform.unix.X11.Cursor;
 import com.sun.jna.platform.unix.X11.Display;
 import com.sun.jna.platform.unix.X11.Window;
 import com.sun.jna.platform.unix.X11.XEvent;
+import com.sun.jna.platform.unix.X11.XSizeHints;
+import com.sun.jna.ptr.NativeLongByReference;
 
 public interface X11Ext extends Library {
 	public static X11Ext INSTANCE = (X11Ext) Native.loadLibrary("X11", X11Ext.class);
@@ -60,7 +62,10 @@ public interface X11Ext extends Library {
 
 	public boolean XCheckTypedWindowEvent(Display display, Window w, int event_type, XEvent event_return);
 
+	int XGetWMNormalHints(Display display, Window window, XSizeHints normals, NativeLongByReference supplied);
+
 	public class XWindowChanges extends Structure {
+
 		private static final List<String> FIELDS = Arrays.asList("x", "y", "width", "height", "border_width", "sibling",
 				"stack_mode");
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,21 @@
  * 
  */
 
-package net.luxvacuos.nanoui.ui;
+package net.luxvacuos.nanoui.framehost.ui;
 
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.ui.Text;
 
-public class Spinner extends Component {
+public class TitleBarText extends Text {
 
-	private float progress = 0;
-	private float r;
-
-	public Spinner(float x, float y, float r) {
-		this.x = x;
-		this.y = y;
-		this.r = r;
-		this.w = r;
-		this.h = r;
+	public TitleBarText(String text, float x, float y) {
+		super(text, x, y);
+		w = 0;
 	}
 
 	@Override
 	public void render(float delta) {
-		Theme.renderSpinner(window.getNVGID(), root.rootX + fx, root.rootY + fy, r, progress);
-	}
-
-	@Override
-	public void update(float delta) {
-		progress += 1 * delta;
+		Theme.renderTitleBarText(window.getNVGID(), text, font, align, root.rootX + fx, root.rootY + fy, fontSize);
 	}
 
 }

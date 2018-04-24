@@ -41,8 +41,8 @@ public class Button extends Component {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderButton(window.getNVGID(), componentState, preicon, text, font, entypo, root.rootX + x,
-				root.rootY + y, w, h, false, fontSize);
+		Theme.renderButton(window.getNVGID(), componentState, preicon, text, font, entypo, root.rootX + fx,
+				root.rootY + fy, w, h, false, fontSize);
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class Button extends Component {
 	}
 
 	public boolean insideButton(MouseHandler mh) {
-		return mh.getX() >= root.rootX + x && mh.getY() > root.rootY + y && mh.getX() < root.rootX + x + w
-				&& mh.getY() <= root.rootY + y + h;
+		return mh.getX() >= root.rootX + fx && mh.getY() > root.rootY + fy && mh.getX() < root.rootX + fx + w
+				&& mh.getY() <= root.rootY + fy + h;
 	}
 
 	public boolean pressed(MouseHandler mh) {

@@ -63,28 +63,28 @@ public class MouseHandler {
 		if (this.isInside())
 			return (float) this.posCallback.getX();
 		else
-			return -1;
+			return -100;
 	}
 
 	public float getY() {
 		if (this.isInside())
 			return (float) this.posCallback.getY();
 		else
-			return -1;
+			return -100;
 	}
 
 	public int getXI() {
 		if (this.isInside())
 			return (int) this.posCallback.getX();
 		else
-			return -1;
+			return -100;
 	}
 
 	public int getYI() {
 		if (this.isInside())
 			return (int) this.posCallback.getY();
 		else
-			return -1;
+			return -100;
 	}
 
 	public float getDX() {

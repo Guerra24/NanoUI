@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,25 @@
  * 
  */
 
-package net.luxvacuos.nanoui.ui;
+package net.luxvacuos.nanoui.framehost;
 
-import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Spinner extends Component {
+import com.sun.jna.platform.unix.X11;
+import com.sun.jna.platform.unix.X11.Atom;
 
-	private float progress = 0;
-	private float r;
+public class CachedAtoms {
 
-	public Spinner(float x, float y, float r) {
-		this.x = x;
-		this.y = y;
-		this.r = r;
-		this.w = r;
-		this.h = r;
-	}
+	private static Map<String, Atom> ATOMS = new HashMap<>();
 
-	@Override
-	public void render(float delta) {
-		Theme.renderSpinner(window.getNVGID(), root.rootX + fx, root.rootY + fy, r, progress);
-	}
-
-	@Override
-	public void update(float delta) {
-		progress += 1 * delta;
+	public static Atom getAtom(String name) {
+		if (ATOMS.containsKey(name)) {
+			return ATOMS.get(name);
+		}
+		Atom a = X11.INSTANCE.XInternAtom(FrameHost.getDisplay(), name, false);
+		ATOMS.put(name, a);
+		return a;
 	}
 
 }

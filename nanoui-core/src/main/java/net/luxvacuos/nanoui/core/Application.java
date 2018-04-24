@@ -152,6 +152,7 @@ public abstract class Application {
 	}
 
 	private void dispose() {
+		currentFrame.dispose();
 		WindowManager.closeAllDisplays();
 		GLFW.glfwTerminate();
 	}

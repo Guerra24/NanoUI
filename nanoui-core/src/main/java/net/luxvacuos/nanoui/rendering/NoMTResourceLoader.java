@@ -18,10 +18,12 @@
  * 
  */
 
-package net.luxvacuos.nanoui.resources;
+package net.luxvacuos.nanoui.rendering;
 
 import static org.lwjgl.nanovg.NanoVG.nvgCreateFontMem;
 import static org.lwjgl.nanovg.NanoVG.nvgCreateImageMem;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,9 +35,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
-import org.lwjgl.BufferUtils;
-
 import net.luxvacuos.nanoui.core.exception.LoadTextureException;
+import net.luxvacuos.nanoui.rendering.glfw.AbstractWindow;
+import net.luxvacuos.nanoui.rendering.objects.RawModel;
 import net.luxvacuos.nanoui.ui.Font;
 
 /**
@@ -45,58 +47,48 @@ import net.luxvacuos.nanoui.ui.Font;
  * @author Guerra24 <pablo230699@hotmail.com>
  * @category Assets
  */
-public class ResourceLoader {
-	private long nvgID;
+public class NoMTResourceLoader implements IResourceLoader {
+	private AbstractWindow window;
 
-	public ResourceLoader(long nvgID) {
-		this.nvgID = nvgID;
+	public NoMTResourceLoader(AbstractWindow abstractWindow) {
+		this.window = abstractWindow;
 	}
 
+	@Override
+	public RawModel loadToVAO(float[] positions, int dimensions) {
+		return null;
+	}
+
+	@Override
 	public Font loadNVGFont(String filename, String name) {
-		return loadNVGFont(filename, name, 150, false);
+		return loadNVGFont(filename, name, 150);
 	}
 
-	public Font loadNVGFont(String filename, String name, boolean file) {
-		return loadNVGFont(filename, name, 150, file);
-	}
-
-	public Font loadNVGFont(String filename, String name, int size, boolean file) {
-		int font = 0;
-		ByteBuffer buffer = null;
+	@Override
+	public Font loadNVGFont(String filename, String name, int size) {
+		ByteBuffer buffer;
+		int font;
 		try {
-			if (!file)
-				buffer = ioResourceToByteBuffer("assets/fonts/" + filename + ".ttf", size * 1024);
-			else
-				buffer = ioResourceToByteBuffer(filename + ".ttf", size * 1024);
-			font = nvgCreateFontMem(nvgID, name, buffer, 0);
+			buffer = ioResourceToByteBuffer("assets/fonts/" + filename + ".ttf", size * 1024);
+			font = nvgCreateFontMem(window.getNVGID(), name, buffer, 0);
+			return new Font(name, buffer, font);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new Font(name, buffer, font);
+		return null;
 	}
 
+	@Override
 	public int loadNVGTexture(String file) {
-		return loadNVGTexture(file, false);
-	}
-
-	public int loadNVGTexture(String filename, boolean file) {
-		int tex = 0;
+		ByteBuffer buffer;
+		int tex;
 		try {
-			if (!file)
-				tex = loadNVGTexture(ioResourceToByteBuffer("assets/" + filename + ".png", 8 * 1024));
-			else
-				tex = loadNVGTexture(ioResourceToByteBuffer(filename, 8 * 1024));
+			buffer = ioResourceToByteBuffer("assets/textures/menu/" + file + ".png", 1024 * 1024);
+			tex = nvgCreateImageMem(window.getNVGID(), 0, buffer);
 		} catch (Exception e) {
-			throw new LoadTextureException(filename, e);
+			throw new LoadTextureException(file, e);
 		}
 		return tex;
-	}
-
-	public int loadNVGTexture(ByteBuffer buffer) {
-		if (buffer != null)
-			return nvgCreateImageMem(nvgID, 0, buffer);
-		else
-			return -1;
 	}
 
 	/**
@@ -120,7 +112,7 @@ public class ResourceLoader {
 			FileInputStream fis = new FileInputStream(file);
 			FileChannel fc = fis.getChannel();
 
-			buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
+			buffer = memAlloc((int) fc.size() + 1);
 
 			while (fc.read(buffer) != -1)
 				;
@@ -128,15 +120,11 @@ public class ResourceLoader {
 			fis.close();
 			fc.close();
 		} else {
-			buffer = BufferUtils.createByteBuffer(bufferSize);
-
-			InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-			if (source == null)
-				throw new FileNotFoundException(resource);
-
-			try {
-				ReadableByteChannel rbc = Channels.newChannel(source);
-				try {
+			buffer = memAlloc(bufferSize);
+			try (InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
+				if (source == null)
+					throw new FileNotFoundException(resource);
+				try (ReadableByteChannel rbc = Channels.newChannel(source)) {
 					while (true) {
 						int bytes = rbc.read(buffer);
 						if (bytes == -1)
@@ -144,11 +132,7 @@ public class ResourceLoader {
 						if (buffer.remaining() == 0)
 							buffer = resizeBuffer(buffer, buffer.capacity() * 2);
 					}
-				} finally {
-					rbc.close();
 				}
-			} finally {
-				source.close();
 			}
 		}
 		buffer.put((byte) 0);
@@ -157,10 +141,15 @@ public class ResourceLoader {
 	}
 
 	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+		ByteBuffer newBuffer = memAlloc(newCapacity);
 		buffer.flip();
 		newBuffer.put(buffer);
+		memFree(buffer);
 		return newBuffer;
+	}
+
+	@Override
+	public void dispose() {
 	}
 
 }

@@ -39,7 +39,7 @@ public class ToggleButton extends Button {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderToggleButton(window.getNVGID(), componentState, text, font, root.rootX + x, root.rootY + y, w, h,
+		Theme.renderToggleButton(window.getNVGID(), componentState, text, font, root.rootX + fx, root.rootY + fy, w, h,
 				fontSize, status);
 	}
 

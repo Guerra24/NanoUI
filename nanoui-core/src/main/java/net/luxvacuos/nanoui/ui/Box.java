@@ -38,7 +38,7 @@ public class Box extends Component {
 
 	@Override
 	public void render(float delta) {
-		Theme.renderBox(window.getNVGID(), root.rootX + x, root.rootY + y, w, h, color, rt, lt, rb, lb);
+		Theme.renderBox(window.getNVGID(), root.rootX + fx, root.rootY + fy, w, h, color, rt, lt, rb, lb);
 	}
 
 	public void setColor(float r, float g, float b, float a) {

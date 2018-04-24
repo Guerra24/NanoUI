@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,28 @@
  * 
  */
 
-package net.luxvacuos.nanoui.ui;
+package net.luxvacuos.nanoui.framehost.ui;
 
 import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme.ButtonStyle;
+import net.luxvacuos.nanoui.ui.Button;
 
-public class Spinner extends Component {
+public class TitleBarButton extends Button {
 
-	private float progress = 0;
-	private float r;
+	private ButtonStyle style = ButtonStyle.NONE;
 
-	public Spinner(float x, float y, float r) {
-		this.x = x;
-		this.y = y;
-		this.r = r;
-		this.w = r;
-		this.h = r;
+	public TitleBarButton(float x, float y, float w, float h) {
+		super(x, y, w, h, "");
 	}
 
 	@Override
 	public void render(float delta) {
-		Theme.renderSpinner(window.getNVGID(), root.rootX + fx, root.rootY + fy, r, progress);
+		Theme.renderTitleBarButton(window.getNVGID(), componentState, root.rootX + fx, root.rootY + fy, w, h, style,
+				false);
 	}
 
-	@Override
-	public void update(float delta) {
-		progress += 1 * delta;
+	public void setStyle(ButtonStyle style) {
+		this.style = style;
 	}
 
 }

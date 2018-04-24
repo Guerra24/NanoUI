@@ -45,6 +45,8 @@ public class Frame extends Component {
 
 	@Override
 	public void dispose() {
+		if (currentPage != null)
+			currentPage.dispose();
 	}
 
 	public void navigate(Page page) {

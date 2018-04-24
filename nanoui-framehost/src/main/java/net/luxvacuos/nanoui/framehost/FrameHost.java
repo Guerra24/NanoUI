@@ -20,15 +20,9 @@
 
 package net.luxvacuos.nanoui.framehost;
 
-import static com.sun.jna.platform.unix.X11.Button1;
 import static com.sun.jna.platform.unix.X11.Button1Mask;
-import static com.sun.jna.platform.unix.X11.Button3;
-import static com.sun.jna.platform.unix.X11.Button3Mask;
-import static com.sun.jna.platform.unix.X11.ButtonMotionMask;
-import static com.sun.jna.platform.unix.X11.*;
-import static com.sun.jna.platform.unix.X11.ButtonPressMask;
+import static com.sun.jna.platform.unix.X11.ButtonPress;
 import static com.sun.jna.platform.unix.X11.ButtonRelease;
-import static com.sun.jna.platform.unix.X11.ButtonReleaseMask;
 import static com.sun.jna.platform.unix.X11.ConfigureNotify;
 import static com.sun.jna.platform.unix.X11.ConfigureRequest;
 import static com.sun.jna.platform.unix.X11.CreateNotify;
@@ -44,7 +38,8 @@ import static com.sun.jna.platform.unix.X11.ReparentNotify;
 import static com.sun.jna.platform.unix.X11.SubstructureNotifyMask;
 import static com.sun.jna.platform.unix.X11.SubstructureRedirectMask;
 import static com.sun.jna.platform.unix.X11.UnmapNotify;
-import static net.luxvacuos.nanoui.framehost.Variables.*;
+import static net.luxvacuos.nanoui.framehost.Variables.BORDER_SIZE;
+import static net.luxvacuos.nanoui.framehost.Variables.TITLEBAR_SIZE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,9 +81,9 @@ import net.luxvacuos.nanoui.rendering.glfw.WindowManager;
 public class FrameHost {
 
 	private static Display display;
-	private Window root, overlay;
+	private static Window root;
 	private boolean wmDetected;
-	private Map<Window, Frame> clients = new HashMap<>();
+	private Map<Window, FrameWindow> clients = new HashMap<>();
 	private Vector2f dragStartPos = new Vector2f();
 	private Vector2f dragStartFramePos = new Vector2f();
 	private Vector2f dragStartFrameSize = new Vector2f();
@@ -159,16 +154,10 @@ public class FrameHost {
 
 	private void loop() {
 		Sync sync = new Sync();
-		int events = 0;
 		while (true) {
 			TaskManager.tm.updateMainThread();
 			WindowManager.update();
 			while (x11.XPending(display) != 0) {
-				if (events > 3) {
-					events = 0;
-					break;
-				}
-				events++;
 				XEvent e = new XEvent();
 				x11.XNextEvent(display, e);
 				System.out.println("Received event " + e.type);
@@ -217,7 +206,7 @@ public class FrameHost {
 					break;
 				}
 			}
-			sync.sync(30);
+			sync.sync(60);
 		}
 	}
 
@@ -238,22 +227,36 @@ public class FrameHost {
 
 	private void onConfigureRequest(XConfigureRequestEvent e) {
 		XWindowChanges changes = new XWindowChanges();
-		changes.x = e.x;
-		changes.y = e.y;
-		changes.width = e.width;
-		changes.height = e.height;
-		changes.border_width = e.border_width;
-		changes.sibling = e.above;
-		changes.stack_mode = e.detail;
 
-		x11ext.XConfigureWindow(display, e.window, e.value_mask, changes);
-		System.out.println("Resize " + e.window + " to " + e.width + " " + e.height);
 		if (clients.containsKey(e.window)) {
-			Window frame = clients.get(e.window).getNativeWindow();
+			changes.x = BORDER_SIZE;
+			changes.y = BORDER_SIZE + TITLEBAR_SIZE;
+			changes.width = e.width;
+			changes.height = e.height;
+			changes.border_width = e.border_width;
+			changes.sibling = e.above;
+			changes.stack_mode = e.detail;
+			x11ext.XConfigureWindow(display, e.window, e.value_mask, changes);
+			System.out.println("Resize " + e.window + " to " + e.width + " " + e.height);
+
+			changes.x = e.x;
+			changes.y = e.y;
+			Window frame = clients.get(e.window).getNativeFrameWindow();
 			changes.width += BORDER_SIZE * 2;
 			changes.height += BORDER_SIZE * 2 + TITLEBAR_SIZE;
 			x11ext.XConfigureWindow(display, frame, e.value_mask, changes);
 			System.out.println("Resize [" + frame + "] to " + e.width + " " + e.height);
+		} else {
+			changes.x = e.x;
+			changes.y = e.y;
+			changes.width = e.width;
+			changes.height = e.height;
+			changes.border_width = e.border_width;
+			changes.sibling = e.above;
+			changes.stack_mode = e.detail;
+
+			x11ext.XConfigureWindow(display, e.window, e.value_mask, changes);
+			System.out.println("Resize " + e.window + " to " + e.width + " " + e.height);
 		}
 	}
 
@@ -271,10 +274,10 @@ public class FrameHost {
 				return;
 			}
 		}
-		Frame f = new Frame(xWindowAttrs.width + BORDER_SIZE * 2,
-				xWindowAttrs.height + BORDER_SIZE * 2 + TITLEBAR_SIZE);
+		FrameWindow f = new FrameWindow(xWindowAttrs.x - BORDER_SIZE, xWindowAttrs.y - BORDER_SIZE - TITLEBAR_SIZE,
+				xWindowAttrs.width + BORDER_SIZE * 2, xWindowAttrs.height + BORDER_SIZE * 2 + TITLEBAR_SIZE, window);
 		f.start();
-		Window frame = f.getNativeWindow();
+		Window frame = f.getNativeFrameWindow();
 
 		// Window frame = x11.XCreateSimpleWindow(display, root, xWindowAttrs.x,
 		// xWindowAttrs.y, xWindowAttrs.width,
@@ -284,12 +287,10 @@ public class FrameHost {
 		x11ext.XReparentWindow(display, window, frame, BORDER_SIZE, BORDER_SIZE + TITLEBAR_SIZE);
 		x11.XMapWindow(display, frame);
 		clients.put(window, f);
-		// a. Resize windows with alt + right button.
-		x11ext.XGrabButton(display, Button1, Mod1Mask, window, false,
-				ButtonPressMask | ButtonReleaseMask | ButtonMotionMask, GrabModeAsync, GrabModeAsync, null, null);
 		// b. Move windows with alt + left button.
-		x11ext.XGrabButton(display, Button3, Mod1Mask, window, false,
-				ButtonPressMask | ButtonReleaseMask | ButtonMotionMask, GrabModeAsync, GrabModeAsync, null, null);
+		// x11ext.XGrabButton(display, Button1, AnyModifier, window, false,
+		// ButtonPressMask | ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		// GrabModeAsync, null, null);
 		// c. Kill windows with alt + f4.
 		x11.XGrabKey(display, (int) x11.XKeysymToKeycode(display, x11.XStringToKeysym("F4")), Mod1Mask, window, 0,
 				GrabModeAsync, GrabModeAsync);
@@ -312,20 +313,20 @@ public class FrameHost {
 	}
 
 	private void unframe(Window window) {
-		Window frame = clients.get(window).getNativeWindow();
+		Window frame = clients.get(window).getNativeFrameWindow();
 		if (frame == null)
 			return;
 
 		// x11.XUnmapWindow(display, frame);
 		// x11ext.XReparentWindow(display, window, root, 0, 0);
 		// x11ext.XRemoveFromSaveSet(display, window);
-		clients.get(window).closeWindow();
+		clients.get(window).closeWindowI();
 		clients.remove(window);
 		System.out.println("Unframed window " + window + " [" + frame + "]");
 	}
 
 	private void onButtonPress(XButtonEvent e) {
-		Window frame = clients.get(e.window).getNativeWindow();
+		Window frame = clients.get(e.window).getNativeFrameWindow();
 		if (frame == null)
 			return;
 
@@ -344,17 +345,13 @@ public class FrameHost {
 	}
 
 	private void onMotionNotify(XMotionEvent e) {
-		Window frame = clients.get(e.window).getNativeWindow();
+		Window frame = clients.get(e.window).getNativeFrameWindow();
 		if (frame == null)
 			return;
 		Vector2f dragPos = new Vector2f(e.x_root, e.y_root);
 		Vector2f delta = new Vector2f();
 		dragPos.sub(dragStartPos, delta);
-		if ((e.state & Button1Mask) == 0) {
-			Vector2f destFramePos = new Vector2f();
-			dragStartFramePos.add(delta, destFramePos);
-			x11ext.XMoveWindow(display, frame, (int) destFramePos.x, (int) destFramePos.y);
-		} else if ((e.state & Button3Mask) == 0) {
+		if ((e.state & Button1Mask) != 0) {
 			Vector2f sizeDelta = new Vector2f(delta.x, delta.y);
 			Vector2f destFrameSize = new Vector2f();
 			dragStartFrameSize.add(sizeDelta, destFrameSize);
@@ -376,6 +373,10 @@ public class FrameHost {
 
 	public static Display getDisplay() {
 		return display;
+	}
+
+	public static Window getRoot() {
+		return root;
 	}
 
 }
