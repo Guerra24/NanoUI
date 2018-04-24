@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,9 @@
  * 
  */
 
-package net.luxvacuos.nanoui.core;
-
-import net.luxvacuos.nanoui.rendering.glfw.RenderingAPI;
+package net.luxvacuos.nanoui.framehost;
 
 public class Variables {
-	public static int WIDTH = 1280;
-	public static int HEIGHT = 720;
-	public static boolean DEBUG = false;
-	public static int SCROLLBAR_SIZE = 16;
-	public static boolean GLES = false;
-	public static String THEME = "Nano";
-	
-	public static RenderingAPI api;
-	
-	public static int UPS = 60;
-	public static int FPS = 60;
-	
+	public static int BORDER_SIZE = 5;
+	public static int TITLEBAR_SIZE = 30;
 }

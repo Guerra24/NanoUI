@@ -39,6 +39,7 @@ import static org.lwjgl.nanovg.NanoVG.nvgClosePath;
 import static org.lwjgl.nanovg.NanoVG.nvgFill;
 import static org.lwjgl.nanovg.NanoVG.nvgFillColor;
 import static org.lwjgl.nanovg.NanoVG.nvgFillPaint;
+import static org.lwjgl.nanovg.NanoVG.nvgFontBlur;
 import static org.lwjgl.nanovg.NanoVG.nvgFontFace;
 import static org.lwjgl.nanovg.NanoVG.nvgFontSize;
 import static org.lwjgl.nanovg.NanoVG.nvgImagePattern;
@@ -71,6 +72,8 @@ import org.lwjgl.nanovg.NVGPaint;
 import org.lwjgl.nanovg.NVGTextRow;
 
 import net.luxvacuos.nanoui.core.Variables;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme.BackgroundStyle;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme.ButtonStyle;
 import net.luxvacuos.nanoui.ui.ComponentState;
 
 public class NanoTheme implements ITheme {
@@ -82,8 +85,196 @@ public class NanoTheme implements ITheme {
 			buttonPress = Theme.rgba(170, 170, 170, 255), buttonTextColor = Theme.rgba(0, 0, 0, 255);
 	protected NVGColor toggleButtonColor = Theme.setColor(1f, 1f, 1f, 1f),
 			toggleButtonHighlight = Theme.setColor(0.5f, 1f, 0.5f, 1f);
+	protected NVGColor titleBarButtonColor = Theme.setColor("#646464C8"),
+			titleBarButtonHighlight = Theme.setColor("#BEBEBEC8"), titleBarButtonPress = Theme.setColor("#FFFFFFC8"),
+			titleBarButtonCloseHighlight = Theme.setColor("#BE0000C8"),
+			titleBarButtonClosePress = Theme.setColor("#FF0000C8");
 	protected NVGColor contextButtonColor = Theme.setColor("#646464C8"),
 			contextButtonHighlight = Theme.setColor("#BEBEBEC8"), contextButtonPress = Theme.setColor("#A0A0A0C8");
+
+	@Override
+	public void renderWindow(long vg, int x, int y, int w, int h, BackgroundStyle backgroundStyle,
+			NVGColor backgroundColor, boolean decorations, boolean titleBar, boolean maximized, int ft, int fb, int fr,
+			int fl, int borderSize, int titleBarHeight) {
+		nvgSave(vg);
+		if (Theme.DEBUG)
+			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
+
+		if (decorations) {
+			if (maximized) {
+				// Window
+				nvgBeginPath(vg);
+				nvgRect(vg, x + fl, y + ft, w - fr - fl, h - fb - ft);
+				nvgPathWinding(vg, NVG_HOLE);
+				nvgRect(vg, x, y - titleBarHeight, w, h + titleBarHeight);
+				nvgFillColor(vg, Theme.rgba(31, 31, 31, 120, colorA));
+				nvgFill(vg);
+				if (Theme.DEBUG) {
+					nvgStrokeColor(vg, Theme.debugA);
+					nvgStroke(vg);
+				}
+			} else {
+				// Window
+				nvgBeginPath(vg);
+				nvgRect(vg, x + fl, y + ft, w - fr - fl, h - fb - ft);
+				nvgPathWinding(vg, NVG_HOLE);
+				if (titleBar) {
+					nvgRect(vg, x - borderSize, y - titleBarHeight - borderSize, w + borderSize * 2f,
+							h + titleBarHeight + borderSize * 2f);
+					nvgFillColor(vg, Theme.rgba(31, 31, 31, 120, colorA));
+					nvgFill(vg);
+					if (Theme.DEBUG) {
+						nvgStrokeColor(vg, Theme.debugA);
+						nvgStroke(vg);
+					}
+				} else {
+					nvgRect(vg, x - borderSize, y - borderSize, w + borderSize * 2f, h + borderSize * 2f);
+					nvgFillColor(vg, Theme.rgba(31, 31, 31, 120, colorA));
+					nvgFill(vg);
+					if (Theme.DEBUG) {
+						nvgStrokeColor(vg, Theme.debugA);
+						nvgStroke(vg);
+					}
+				}
+			}
+		}
+
+		// Background
+		switch (backgroundStyle) {
+		case SOLID:
+			nvgBeginPath(vg);
+			nvgRect(vg, x + fl, y + ft, w - fr - fl, h - fb - ft);
+			nvgFillColor(vg, backgroundColor);
+			nvgFill(vg);
+			break;
+		case TRANSPARENT:
+			break;
+		}
+
+		if (Theme.DEBUG) {
+			nvgBeginPath(vg);
+			nvgRect(vg, x + fl, y + ft, w - fr - fl, h - fb - ft);
+			nvgStrokeColor(vg, Theme.debugA);
+			nvgStroke(vg);
+		}
+
+		nvgRestore(vg);
+	}
+
+	@Override
+	public float renderTitleBarText(long vg, String text, String font, int align, float x, float y, float fontSize) {
+		nvgSave(vg);
+		nvgFontSize(vg, fontSize);
+		nvgFontFace(vg, font);
+		nvgTextAlign(vg, align);
+
+		nvgFontBlur(vg, 4);
+		nvgFillColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+		nvgText(vg, x, y + 1, text);
+
+		nvgFontBlur(vg, 0);
+		nvgFillColor(vg, Theme.rgba(255, 255, 255, 255, colorA));
+		nvgText(vg, x, y, text);
+		float[] bounds = new float[4];
+		nvgTextBounds(vg, x, y, text, bounds);
+		if (Theme.DEBUG) {
+			nvgIntersectScissor(vg, bounds[0], bounds[1], bounds[2] - bounds[0], bounds[3] - bounds[1]);
+			nvgBeginPath(vg);
+			nvgRect(vg, bounds[0], bounds[1], bounds[2] - bounds[0], bounds[3] - bounds[1]);
+			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
+			nvgStrokeColor(vg, Theme.debugB);
+			nvgStroke(vg);
+		}
+		nvgRestore(vg);
+		return bounds[2];
+	}
+
+	@Override
+	public void renderTitleBarButton(long vg, ComponentState componentState, float x, float y, float w, float h,
+			ButtonStyle style, boolean highlight) {
+		nvgSave(vg);
+		nvgIntersectScissor(vg, x, y, w, h);
+		nvgBeginPath(vg);
+		nvgRect(vg, x, y, w, h);
+		switch (componentState) {
+		case HOVER:
+			if (style.equals(ButtonStyle.CLOSE))
+				nvgFillColor(vg, titleBarButtonCloseHighlight);
+			else
+				nvgFillColor(vg, titleBarButtonHighlight);
+			break;
+		case NONE:
+			nvgFillColor(vg, titleBarButtonColor);
+			break;
+		case PRESSED:
+			if (style.equals(ButtonStyle.CLOSE))
+				nvgFillColor(vg, titleBarButtonClosePress);
+			else
+				nvgFillColor(vg, titleBarButtonPress);
+			break;
+		case SELECTED:
+			break;
+		}
+		nvgFill(vg);
+
+		if (Theme.DEBUG) {
+			nvgStrokeWidth(vg, Theme.DEBUG_STROKE);
+			nvgStrokeColor(vg, Theme.debugB);
+			nvgStroke(vg);
+		}
+
+		switch (style) {
+		case CLOSE:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2 - 6, y + h / 2 - 6);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2 + 6);
+			nvgMoveTo(vg, x + w / 2 - 6, y + h / 2 + 6);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2 - 6);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
+		case MAXIMIZE:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2 - 6, y + h / 2 - 6);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2 - 6);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2 + 6);
+			nvgLineTo(vg, x + w / 2 - 6, y + h / 2 + 6);
+			nvgLineTo(vg, x + w / 2 - 6, y + h / 2 - 6);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
+		case MINIMIZE:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2 - 6, y + h / 2);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
+		case LEFT_ARROW:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2, y + h / 2 + 6);
+			nvgLineTo(vg, x + w / 2 - 6, y + h / 2);
+			nvgLineTo(vg, x + w / 2, y + h / 2 - 6);
+			nvgMoveTo(vg, x + w / 2 - 6, y + h / 2);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
+		case RIGHT_ARROW:
+			nvgBeginPath(vg);
+			nvgMoveTo(vg, x + w / 2, y + h / 2 + 6);
+			nvgLineTo(vg, x + w / 2 + 6, y + h / 2);
+			nvgLineTo(vg, x + w / 2, y + h / 2 - 6);
+			nvgMoveTo(vg, x + w / 2 + 6, y + h / 2);
+			nvgLineTo(vg, x + w / 2 - 6, y + h / 2);
+			nvgStrokeColor(vg, Theme.rgba(0, 0, 0, 255, colorA));
+			nvgStroke(vg);
+			break;
+		case NONE:
+			break;
+		}
+		nvgRestore(vg);
+	}
 
 	@Override
 	public float renderText(long vg, String text, String font, int align, float x, float y, float fontSize,

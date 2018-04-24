@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.luxvacuos.nanoui.core.Application;
+import net.luxvacuos.nanoui.core.Variables;
 import net.luxvacuos.nanoui.core.exception.CompileShaderException;
 import net.luxvacuos.nanoui.core.exception.LoadShaderException;
 import net.luxvacuos.nanoui.rendering.glfw.RenderingAPI;
@@ -177,7 +177,7 @@ public abstract class ShaderProgram implements IDisposable {
 		InputStream filet = getClass().getClassLoader().getResourceAsStream("assets/shaders/" + file);
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(filet));
-			if (Application.getRenderingAPI() == RenderingAPI.GLES) {
+			if (Variables.api == RenderingAPI.GLES) {
 				shaderSource.append("#version 300 es").append("//\n");
 				shaderSource.append(ShaderIncludes.getVariable("GLES")).append("//\n");
 			} else

@@ -38,7 +38,6 @@ import net.luxvacuos.nanoui.ui.Root;
 
 public abstract class Application {
 
-	private static RenderingAPI api;
 	private static long renderThreadID;
 	private static Font poppinsRegular, poppinsLight, poppinsMedium, poppinsBold, poppinsSemiBold, entypo;
 
@@ -61,9 +60,9 @@ public abstract class Application {
 
 	private void init() {
 		if (Variables.GLES)
-			api = RenderingAPI.GLES;
+			Variables.api = RenderingAPI.GLES;
 		else
-			api = RenderingAPI.GL;
+			Variables.api = RenderingAPI.GL;
 
 		GLFW.glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 		if (!GLFW.glfwInit())
@@ -77,8 +76,8 @@ public abstract class Application {
 
 	private void initRender() {
 		WindowManager.createWindow(handle, window, true);
-		NVGFramebuffers.init(api);
-		GL.init(api);
+		NVGFramebuffers.init(Variables.api);
+		GL.init(Variables.api);
 
 		ThemeManager.addTheme(new NanoTheme());
 		ThemeManager.setTheme(Variables.THEME);
@@ -123,7 +122,7 @@ public abstract class Application {
 		currentFrame = new Frame();
 		currentFrame.setRoot(root);
 		currentFrame.init(window);
-		
+
 		renderThread.interrupt(); // Resume renderThread execution
 		onLaunched();
 		float deltaUpdate = 0;
@@ -174,10 +173,6 @@ public abstract class Application {
 	public void setWindowTitle(String windowTitle) {
 		this.windowTitle = windowTitle;
 		TaskManager.tm.addTaskMainThread(() -> window.setWindowTitle(windowTitle));
-	}
-
-	public static RenderingAPI getRenderingAPI() {
-		return api;
 	}
 
 	public static long getRenderThreadID() {

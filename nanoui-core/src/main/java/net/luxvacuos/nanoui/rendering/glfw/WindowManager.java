@@ -46,7 +46,6 @@ import org.lwjgl.system.MemoryStack;
 
 import com.badlogic.gdx.utils.Array;
 
-import net.luxvacuos.nanoui.core.Application;
 import net.luxvacuos.nanoui.core.Variables;
 import net.luxvacuos.nanoui.core.exception.DecodeTextureException;
 import net.luxvacuos.nanoui.core.exception.GLFWException;
@@ -161,7 +160,7 @@ public final class WindowManager {
 		GLFW.glfwSwapInterval(vsync ? 1 : 0);
 
 		int nvgFlags;
-		switch (Application.getRenderingAPI()) {
+		switch (Variables.api) {
 		case GL:
 			window.capabilities = GL.createCapabilities(true);
 			nvgFlags = NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES;
@@ -192,7 +191,7 @@ public final class WindowManager {
 		default:
 			break;
 		}
-		window.api = Application.getRenderingAPI();
+		window.api = Variables.api;
 
 		if (window.nvgID == NULL)
 			throw new GLFWException("Fail to create NanoVG context for Window '" + handle.title + "'");
@@ -260,7 +259,7 @@ public final class WindowManager {
 
 	private static void detectGraphicsCard() {
 		var vendor = "";
-		switch (Application.getRenderingAPI()) {
+		switch (Variables.api) {
 		case GL:
 			vendor = GL11.glGetString(GL11.GL_VENDOR);
 			break;

@@ -22,9 +22,20 @@ package net.luxvacuos.nanoui.rendering.nanovg.themes;
 
 import org.lwjgl.nanovg.NVGColor;
 
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme.BackgroundStyle;
+import net.luxvacuos.nanoui.rendering.nanovg.themes.Theme.ButtonStyle;
 import net.luxvacuos.nanoui.ui.ComponentState;
 
 public interface ITheme {
+
+	public void renderWindow(long vg, int x, int y, int w, int h, BackgroundStyle backgroundStyle,
+			NVGColor backgroundColor, boolean decorations, boolean titleBar, boolean maximized, int ft, int fb, int fr,
+			int fl, int borderSize, int titleBarHeight);
+
+	public float renderTitleBarText(long vg, String text, String font, int align, float x, float y, float fontSize);
+
+	public void renderTitleBarButton(long vg, ComponentState componentState, float x, float y, float w, float h,
+			ButtonStyle style, boolean highlight);
 
 	public float renderText(long vg, String text, String font, int align, float x, float y, float fontSize,
 			NVGColor color);

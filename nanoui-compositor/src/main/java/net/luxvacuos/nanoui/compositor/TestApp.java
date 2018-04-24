@@ -1,7 +1,7 @@
 /*
  * This file is part of NanoUI
  * 
- * Copyright (C) 2016-2018 Guerra24
+ * Copyright (C) 2017-2018 Guerra24
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,28 @@
  * 
  */
 
-package net.luxvacuos.nanoui.core;
+package net.luxvacuos.nanoui.compositor;
 
-import net.luxvacuos.nanoui.rendering.glfw.RenderingAPI;
+import net.luxvacuos.nanoui.core.Application;
+import net.luxvacuos.nanoui.ui.Button;
+import net.luxvacuos.nanoui.ui.Page;
 
-public class Variables {
-	public static int WIDTH = 1280;
-	public static int HEIGHT = 720;
-	public static boolean DEBUG = false;
-	public static int SCROLLBAR_SIZE = 16;
-	public static boolean GLES = false;
-	public static String THEME = "Nano";
-	
-	public static RenderingAPI api;
-	
-	public static int UPS = 60;
-	public static int FPS = 60;
-	
+public class TestApp extends Application {
+
+	public static void main(String[] args) {
+		new TestApp();
+	}
+
+	@Override
+	public void onLaunched() {
+		Page p = new Page();
+		p.addComponent(new Button(0, 0, 200, 20, "Test Btn"));
+		super.currentFrame.navigate(p);
+		super.setWindowTitle("TestApp");
+	}
+
+	@Override
+	public void onClosed() {
+	}
+
 }

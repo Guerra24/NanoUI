@@ -24,7 +24,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.badlogic.gdx.utils.Array;
 
-import net.luxvacuos.nanoui.core.Application;
+import net.luxvacuos.nanoui.core.Variables;
 
 public final class WindowHandle {
 
@@ -41,7 +41,7 @@ public final class WindowHandle {
 		// Reset the window hints
 		GLFW.glfwDefaultWindowHints();
 
-		switch (Application.getRenderingAPI()) {
+		switch (Variables.api) {
 		case GL:
 			// Set the window to use OpenGL 3.3 Core with forward compatibility
 			this.setWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
