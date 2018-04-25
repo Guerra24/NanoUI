@@ -1,11 +1,11 @@
-# NanoTaskbar
-Custom Taskbar for Win10
+# NanoUI
 
-![img](https://puu.sh/xnUXa/f3e572095b.gif)
+A set of Window Manager & Compositor for X11 made in Java with LWJGL.
 
+## FrameHost
 
-# WIP
+The Window Manager, handles all window decoration and events.
 
-Test application that uses custom titlebar and NanoUI.
+## Compositor
 
-![img](https://puu.sh/x1emX/aee3c0c0fd.png)
+Composites the windows using OpenGL.
