@@ -1,6 +1,6 @@
 # NanoUI
 
-A set of Window Manager & Compositor for X11 made in Java with LWJGL.
+An experimental Window Manager & (non-working) Compositor for X11 made in Java with LWJGL.
 
 ## FrameHost
 
